@@ -27,6 +27,8 @@
   --dim: rgb(22 22 22 / 0.14);
   /* The orange focus ring is under 3:1 on Ivory surfaces; an ink halo behind it fixes that. */
   --focus-halo: 0 0 0 6px var(--ink);
+  /* Same fix for the orange active marker on the light wheel. */
+  --marker-rim: 0 0 0 1.5px var(--ink);
   color-scheme: light;
 }
 
@@ -51,6 +53,7 @@
   --icon-back: #4a4a51;
   --dim: rgb(242 241 236 / 0.16);
   --focus-halo: 0 0 0 0 transparent;
+  --marker-rim: 0 0 0 0 transparent;
   color-scheme: dark;
 }
 

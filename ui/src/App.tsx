@@ -1,12 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api, type DiscoveryError, type PluginInfo } from "./api";
 import { Backdrop } from "./components/Backdrop";
+import { ClickWheel, type Page } from "./components/ClickWheel";
 import { DeviceHeader, type SourceLed } from "./components/DeviceHeader";
 import { Key } from "./components/Key";
+import { PageTabs } from "./components/PageTabs";
 import { PluginCard } from "./components/PluginCard";
 import { KNOWN_SOURCES, sourceStyle } from "./sources";
 
+const TABS: { id: Page; label: string }[] = [
+  { id: "search", label: "SEARCH" },
+  { id: "queue", label: "QUEUE" },
+  { id: "library", label: "LIBRARY" },
+  { id: "sources", label: "SOURCES" },
+];
+
 export function App() {
+  const [page, setPage] = useState<Page>("search");
+  const primaryAction = useRef<(() => void) | null>(null);
   const [plugins, setPlugins] = useState<PluginInfo[]>([]);
   const [, setErrors] = useState<DiscoveryError[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -50,13 +61,22 @@ export function App() {
           <div className="main-row">
             <section className="screen-bezel" aria-label="Screen">
               <div className="screen">
+                <div className="screen-top">
+                  <PageTabs tabs={TABS} active={page} onSelect={setPage} />
+                </div>
                 {loadError && <p>Could not reach the backend: {loadError}</p>}
-                {plugins.map((p) => (
+                {page === "sources" && plugins.map((p) => (
                   <PluginCard key={`${p.kind}-${p.id}`} plugin={p} onChange={replace} />
                 ))}
               </div>
             </section>
             <aside className="controls" aria-label="Controls">
+              <ClickWheel
+                active={page}
+                onNavigate={setPage}
+                onSelect={() => primaryAction.current?.()}
+                selectHint="Runs the current page's main action."
+              />
               <Key variant="primary" icon="download" className="key-primary">
                 DOWNLOAD
               </Key>
