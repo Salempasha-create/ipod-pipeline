@@ -269,12 +269,14 @@ A Soulseek-only user enters a username and password, and setup is done.
 
 | Version | Scope |
 |---|---|
-| **v0.1 — Core pipeline** | Plugin system, Soulseek + Local files sources, search & results picker, queue, MusicBrainz tagging with default preset, ALAC conversion, library folder |
+| **v0.1 — Core pipeline** | Plugin system, Soulseek source, Local files source, search & results picker, queue, MusicBrainz tagging with default preset, ALAC conversion, library folder |
 | **v0.2 — Batch input** | Playlist links, CSV/text import, batch review screen, wishlist |
 | **v0.3 — More sources** | Usenet, BitTorrent (built-in engine + external clients), shared indexer support |
 | **v0.4 — Handoff & onboarding** | iOpenPod detection and handoff, setup wizard, one-click dependency installer |
-| **v1.0 — Public release** | Installers for all 3 OSes via GitHub Actions, update checker, docs, issue templates, contributing guide |
+| **v1.0 — Public release** | Installers for all 3 OSes via GitHub Actions, update checker, docs, finalize issue templates and contributing guide (first versions exist) |
 | **Later** | Follow artists for new releases, Bandcamp / YouTube Music sources, more devices, Option C |
+
+Each scope item is tracked as a GitHub issue under its milestone.
 
 ---
 
@@ -304,6 +306,6 @@ A Soulseek-only user enters a username and password, and setup is done.
 
 - **This file** — what the app does.
 - **`docs/DECISIONS.md`** — decision log (moved from §13 once it grows).
-- **GitHub Issues** — one per feature or bug; labels: `source`, `processor`, `target`, `ui`, `bug`.
+- **GitHub Issues** — one per feature or bug; labels: `source`, `processor`, `target`, `ui`, `bug`, `core` (app-wide infrastructure).
 - **Milestones** — match §12.
 - **Projects board** — To Do → In Progress → Done.
