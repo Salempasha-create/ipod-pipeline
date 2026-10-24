@@ -1,0 +1,140 @@
+/*
+ * PL-1 design tokens (docs/DESIGN.md §3–§4).
+ * Components use these variables only: no raw colors or font families elsewhere.
+ * Skins switch with <html data-skin="ivory|graphite">; Ivory is the default.
+ */
+
+:root,
+:root[data-skin="ivory"] {
+  /* ---- Skin: Ivory (body) ---- */
+  --body: #ece9e2;
+  --seam: #bdb7ab;
+  --hi: rgb(255 255 255 / 0.8);
+  --ink: #161616;
+  --soft: #4a4741;
+  --bezel: #d3cec4;
+  --wheel-a: #f8f6f2;
+  --wheel-b: #d8d3c9;
+  --recess: #cfcac0;
+  --center: radial-gradient(circle at 50% 72%, #4a4a4f 0%, #2b2b2f 55%, #1e1e21 100%);
+  --center-edge: #141416;
+  --key: #f7f5f0;
+  --key-edge: #b0aa9e;
+  --slot: #e0dcd3;
+  --card: #f1eee8;
+  --dots: #3a3833;
+  --icon-back: #d3cec4;
+  --dim: rgb(22 22 22 / 0.14);
+  /* The orange focus ring is under 3:1 on Ivory surfaces; an ink halo behind it fixes that. */
+  --focus-halo: 0 0 0 6px var(--ink);
+  /* Same fix for the orange active marker on the light wheel. */
+  --marker-rim: 0 0 0 1.5px var(--ink);
+  color-scheme: light;
+}
+
+:root[data-skin="graphite"] {
+  /* ---- Skin: Graphite (body) ---- */
+  --body: #29292d;
+  --seam: #45454c;
+  --hi: rgb(255 255 255 / 0.08);
+  --ink: #f2f1ec;
+  --soft: #bab8b1;
+  --bezel: #151517;
+  --wheel-a: #3c3c41;
+  --wheel-b: #222226;
+  --recess: #1b1b1e;
+  --center: radial-gradient(circle at 50% 72%, #ffffff 0%, #ece9e2 55%, #cbc6bc 100%);
+  --center-edge: #8f8a80;
+  --key: #35353b;
+  --key-edge: #1a1a1d;
+  --slot: #1f1f22;
+  --card: #2e2e33;
+  --dots: #0b0b0c;
+  --icon-back: #4a4a51;
+  --dim: rgb(242 241 236 / 0.16);
+  --focus-halo: 0 0 0 0 transparent;
+  --marker-rim: 0 0 0 0 transparent;
+  color-scheme: dark;
+}
+
+:root {
+  /* ---- Typography (§3) ---- */
+  --font-label: "Space Mono", ui-monospace, monospace;
+  --font-read: "Geist", system-ui, sans-serif;
+  --font-data: "Geist Mono", ui-monospace, monospace;
+
+  /* ---- Fixed colors (§4) ---- */
+  --screen: #0c0c0d;
+  --screen-text: #f4f4f2;
+  --screen-soft: #a3a3a0;
+  --screen-sub: #a9a9a6;
+  --screen-data: #d6d6d3;
+  --screen-note: #cfcfcb;
+  --screen-head: #8e8e8b;
+  --screen-rule: #2a2a2d;
+  /* Control outlines on the screen, raised from the mockup's #3A3A3D/#4A4A4E to reach 3:1. */
+  --screen-line: #6e6e6b;
+  --screen-icon-back: #5c5c60;
+  --screen-bar-off: #2e2e31;
+  --row-selected: #1a1a1c;
+  --row-selected-edge: rgb(244 244 242 / 0.35);
+  --screen-inset: inset 0 0 0 1px rgb(255 255 255 / 0.04);
+
+  --action: #ff5b14;
+  --action-top: #ff7333;
+  --action-bottom: #ee4f0b;
+  --action-edge: #b8400b;
+  --action-label: #141414;
+  --action-soft: #ffd7c2;
+  --action-glow: rgb(184 64 11 / 0.6);
+
+  --backdrop-white: #f4f4f2;
+  --backdrop-black: #0b0b0c;
+
+  /* ---- Sources (§4): each source owns one color ---- */
+  --src-slsk: #4d7cff;
+  --src-usnt: #ffc21a;
+  --src-btrt: #2fcb7e;
+  --src-locl: #a3a3a0;
+  --shell-slsk: linear-gradient(160deg, #7fa0ff 0%, #4d7cff 45%, #2f57d9 100%);
+  --shell-usnt: linear-gradient(160deg, #ffe07a 0%, #ffc21a 45%, #d99a00 100%);
+  --shell-btrt: linear-gradient(160deg, #74e3aa 0%, #2fcb7e 45%, #189a5a 100%);
+  --shell-locl: linear-gradient(160deg, #8a8a90 0%, #5e5e64 45%, #3a3a3f 100%);
+
+  /* ---- Minidisc (§7) ---- */
+  --disc-label: #fafaf7;
+  --disc-label-ink: #141414;
+  --disc-label-soft: #4a4741;
+  --disc-edge: rgb(0 0 0 / 0.3);
+  --disc-shutter: linear-gradient(180deg, #f1f1f2 0%, #c3c5c9 55%, #9ea1a6 100%);
+  --disc-shutter-hi: #ffffff;
+  --disc-window: rgb(0 0 0 / 0.12);
+  --disc-notch: rgb(0 0 0 / 0.45);
+  --disc-shadow: inset 0 1px 0 rgb(255 255 255 / 0.45), inset 0 -2px 0 rgb(0 0 0 / 0.15),
+    0 8px 14px -4px rgb(0 0 0 / 0.35);
+
+  /* ---- Shadows ---- */
+  --shadow-device: inset 0 1px 0 var(--hi), inset 0 -3px 0 rgb(0 0 0 / 0.08),
+    0 2px 6px rgb(0 0 0 / 0.12), 0 40px 80px -24px rgb(0 0 0 / 0.45);
+  --shadow-bezel: inset 0 3px 8px rgb(0 0 0 / 0.35), 0 1px 0 var(--hi);
+  --shadow-slot: inset 0 3px 8px rgb(0 0 0 / 0.18), 0 1px 0 var(--hi);
+  --shadow-display: inset 0 2px 4px rgb(0 0 0 / 0.6), 0 1px 0 var(--hi);
+  --shadow-wheel: inset 0 2px 0 var(--hi), inset 0 -10px 18px rgb(0 0 0 / 0.12),
+    0 14px 26px -8px rgb(0 0 0 / 0.35);
+  --shadow-recess: inset 0 3px 7px rgb(0 0 0 / 0.3), 0 1px 0 var(--hi);
+  --shadow-center: inset 0 3px 6px rgb(0 0 0 / 0.35), 0 1px 0 var(--hi);
+  --shadow-grille: inset 0 2px 5px rgb(0 0 0 / 0.25);
+  --shadow-key-press: inset 0 2px 4px rgb(0 0 0 / 0.25);
+  --primary-gloss: rgb(255 255 255 / 0.45);
+
+  /* ---- Shape and size ---- */
+  --radius-device: 34px;
+  --radius-bezel: 22px;
+  --radius-screen: 14px;
+  --radius-slot: 24px;
+  --radius-card: 18px;
+  --radius-key: 14px;
+  --radius-small-key: 12px;
+  --radius-pill: 999px;
+  --target-min: 44px;
+}

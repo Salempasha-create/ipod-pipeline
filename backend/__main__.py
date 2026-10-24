@@ -12,6 +12,7 @@ import uvicorn
 
 from backend import APP_NAME
 from backend.app import create_app
+from backend.desktop import DesktopApi, want_frameless
 
 log = logging.getLogger(APP_NAME)
 
@@ -30,6 +31,13 @@ def main() -> None:
     )
     parser.add_argument(
         "--ui-url", help="load the UI from this URL instead, e.g. the Vite dev server"
+    )
+    frame = parser.add_mutually_exclusive_group()
+    frame.add_argument(
+        "--frameless", dest="frameless", action="store_true", default=None, help="custom title bar"
+    )
+    frame.add_argument(
+        "--native-frame", dest="frameless", action="store_false", help="use the OS window frame"
     )
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
@@ -54,8 +62,23 @@ def main() -> None:
 
     import webview  # imported late: only the desktop window needs it
 
+    frameless = want_frameless(args.frameless)
+    api = DesktopApi(frameless)
+    # Only the bare title-bar surface drags the window, so its buttons stay clickable.
+    webview.settings["DRAG_REGION_DIRECT_TARGET_ONLY"] = True
     url = args.ui_url or f"http://127.0.0.1:{port}/"
-    webview.create_window(APP_NAME, url, width=1100, height=780, min_size=(720, 520))
+    window = webview.create_window(
+        "Pipeline",
+        url,
+        js_api=api,
+        width=1380,
+        height=960,
+        min_size=(760, 600),
+        frameless=frameless,
+        easy_drag=False,
+        background_color="#F4F4F2",
+    )
+    api._attach(window)
     webview.start()
 
     server.should_exit = True

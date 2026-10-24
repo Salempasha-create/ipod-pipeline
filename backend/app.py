@@ -1,8 +1,10 @@
-"""FastAPI app: plugin listing, enable/disable, settings and source jobs."""
+"""FastAPI app: plugins, settings, search, jobs and the (temporary) library view."""
 
 from __future__ import annotations
 
 import os
+import subprocess
+import sys
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -15,9 +17,12 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from backend.jobs import JobManager
+from backend.backdrop_routes import backdrop_router
+from backend.backdrops import Backdrops
+from backend.jobs import Job, JobManager, JobStatus
 from backend.plugins.base import Plugin, PluginKind, Source
 from backend.plugins.discovery import PluginRegistry, discover
+from backend.search import search_sources
 from backend.settings import SettingsError, SettingsStore
 
 LOCAL_HOSTS = ["127.0.0.1", "localhost"]
@@ -49,15 +54,51 @@ class JobBody(BaseModel):
     request: dict[str, Any] = {}
 
 
+class PausedBody(BaseModel):
+    paused: bool
+
+
+def open_in_file_manager(path: Path) -> None:
+    if sys.platform == "win32":
+        os.startfile(path)  # type: ignore[attr-defined]
+    elif sys.platform == "darwin":
+        subprocess.Popen(["open", str(path)])
+    else:
+        subprocess.Popen(["xdg-open", str(path)])
+
+
+def library_album(job: Job) -> dict[str, Any] | None:
+    """A finished download shown in the Library until the real library target exists (#8)."""
+    result = job.request.get("result")
+    if job.status is not JobStatus.DONE or not isinstance(result, dict) or not job.files:
+        return None
+    return {
+        "id": job.id,
+        "title": result.get("title", "Unknown"),
+        "artist": result.get("artist", "Unknown"),
+        "year": result.get("year"),
+        "format": result.get("format", "FLAC"),
+        "bit_depth": result.get("bit_depth"),
+        "sample_rate": result.get("sample_rate"),
+        "bitrate": result.get("bitrate"),
+        "track_count": len(job.files),
+        "source_id": job.source_id,
+        "source_name": result.get("source_name", job.source_id),
+        "folder": str(job.files[0].parent),
+    }
+
+
 def create_app(
     registry: PluginRegistry | None = None,
     store: SettingsStore | None = None,
     jobs: JobManager | None = None,
     ui_dir: Path | None = None,
     allowed_hosts: list[str] | None = None,
+    backdrops: Backdrops | None = None,
 ) -> FastAPI:
     registry = registry if registry is not None else discover()
     store = store if store is not None else SettingsStore()
+    backdrops = backdrops if backdrops is not None else Backdrops(store)
     hosts = allowed_hosts or LOCAL_HOSTS
     state: dict[str, JobManager] = {}
 
@@ -95,6 +136,7 @@ def create_app(
         info["values"] = store.values(plugin)
         info["secrets_set"] = store.secrets_set(plugin)
         info["can_test"] = issubclass(plugin, Source) and plugin.test_request is not None
+        info["can_search"] = issubclass(plugin, Source) and plugin.can_search()
         return info
 
     @app.get("/api/plugins")
@@ -132,9 +174,29 @@ def create_app(
         job = state["jobs"].start(plugin(store.resolved(plugin)), request)
         return job.to_dict()
 
+    @app.get("/api/search")
+    async def search(q: str) -> dict[str, Any]:
+        query = q.strip()
+        if not query:
+            raise HTTPException(422, "type something to search for")
+        sources = [
+            (cls.id, cls.name, cls(store.resolved(cls)))
+            for cls in registry.plugins[PluginKind.SOURCE].values()
+            if issubclass(cls, Source) and cls.can_search() and store.is_enabled(cls)
+        ]
+        if not sources:
+            raise HTTPException(409, "no searchable sources are turned on")
+        return await search_sources(sources, query)
+
     @app.get("/api/jobs")
     async def list_jobs() -> dict[str, Any]:
-        return {"jobs": [j.to_dict() for j in state["jobs"].all()]}
+        manager = state["jobs"]
+        return {"jobs": [j.to_dict() for j in manager.all()], "paused": manager.paused}
+
+    @app.put("/api/jobs/paused")
+    async def set_paused(body: PausedBody) -> dict[str, Any]:
+        state["jobs"].set_paused(body.paused)
+        return {"paused": state["jobs"].paused}
 
     @app.get("/api/jobs/{job_id}")
     async def get_job(job_id: str) -> dict[str, Any]:
@@ -154,6 +216,21 @@ def create_app(
         if not manager.cancel(job_id):
             raise HTTPException(409, f"job is already {job.status.value}")
         return job.to_dict()
+
+    @app.get("/api/library")
+    async def library() -> dict[str, Any]:
+        albums = [library_album(job) for job in state["jobs"].all()]
+        return {"albums": [a for a in albums if a is not None]}
+
+    @app.post("/api/library/{album_id}/open", status_code=204)
+    async def open_album(album_id: str) -> None:
+        job = state["jobs"].get(album_id)
+        album = library_album(job) if job else None
+        if album is None:
+            raise HTTPException(404, "unknown album")
+        open_in_file_manager(Path(album["folder"]))
+
+    app.include_router(backdrop_router(backdrops))
 
     ui = ui_dir or default_ui_dir()
     if (ui / "index.html").is_file():

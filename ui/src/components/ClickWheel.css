@@ -1,0 +1,110 @@
+/* Click wheel (DESIGN.md §6), geometry from the reference: 300px wheel, 132px recess, 108px center. */
+
+.wheel {
+  position: relative;
+  flex: none;
+  width: 300px;
+  height: 300px;
+  border: 1px solid var(--seam);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 30%, var(--wheel-a) 0%, var(--wheel-b) 100%);
+  box-shadow: var(--shadow-wheel);
+}
+
+.wheel-recess {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 132px;
+  height: 132px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--recess);
+  box-shadow: var(--shadow-recess);
+}
+
+.wheel-button {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 96px;
+  height: 78px;
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  color: var(--ink);
+}
+
+.wheel-search {
+  top: 12px;
+  left: calc(50% - 48px);
+}
+
+.wheel-library {
+  bottom: 12px;
+  left: calc(50% - 48px);
+}
+
+.wheel-queue,
+.wheel-sources {
+  top: calc(50% - 39px);
+  width: 84px;
+}
+
+.wheel-queue {
+  right: 6px;
+}
+
+.wheel-sources {
+  left: 6px;
+}
+
+.wheel-label {
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+/* Orange active marker; the rim keeps it at 3:1 on the light Ivory wheel. */
+.wheel-marker {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.wheel-button[aria-current="page"] .wheel-marker {
+  background: var(--action);
+  box-shadow: var(--marker-rim), 0 0 8px var(--action);
+}
+
+.wheel-button:hover .ico {
+  transform: translateY(-1px);
+}
+
+.wheel-button .ico {
+  transition: transform 0.1s;
+}
+
+.wheel-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 108px;
+  height: 108px;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--center-edge);
+  border-radius: 50%;
+  background: var(--center);
+  --elev: var(--shadow-center);
+  box-shadow: var(--elev);
+}
+
+.wheel-center:active {
+  transform: translate(-50%, -50%) scale(0.97);
+}

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pipeline PL-1: design system</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=Geist+Mono:wght@500;600;700&amp;family=Space+Mono:wght@700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#FF5B14}a:hover{color:#E24E0D}
+.ico{position:relative;display:inline-block;flex:none}
+.ico>span{position:absolute;inset:0;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-size:2400% 100%;mask-size:2400% 100%}
+.ico>.b{-webkit-mask-image:url(/_blob/1e9addcf6b6835a7670e50deabb3ba6d);mask-image:url(/_blob/1e9addcf6b6835a7670e50deabb3ba6d)}
+.ico>.f{-webkit-mask-image:url(/_blob/d3690e2c4fe8983a1f335ae357305038);mask-image:url(/_blob/d3690e2c4fe8983a1f335ae357305038)}
+.k0>span{-webkit-mask-position:0% 0;mask-position:0% 0}.k1>span{-webkit-mask-position:4.3478% 0;mask-position:4.3478% 0}.k2>span{-webkit-mask-position:8.6957% 0;mask-position:8.6957% 0}.k3>span{-webkit-mask-position:13.0435% 0;mask-position:13.0435% 0}.k4>span{-webkit-mask-position:17.3913% 0;mask-position:17.3913% 0}.k5>span{-webkit-mask-position:21.7391% 0;mask-position:21.7391% 0}.k6>span{-webkit-mask-position:26.087% 0;mask-position:26.087% 0}.k7>span{-webkit-mask-position:30.4348% 0;mask-position:30.4348% 0}.k8>span{-webkit-mask-position:34.7826% 0;mask-position:34.7826% 0}.k9>span{-webkit-mask-position:39.1304% 0;mask-position:39.1304% 0}.k10>span{-webkit-mask-position:43.4783% 0;mask-position:43.4783% 0}.k11>span{-webkit-mask-position:47.8261% 0;mask-position:47.8261% 0}.k12>span{-webkit-mask-position:52.1739% 0;mask-position:52.1739% 0}.k13>span{-webkit-mask-position:56.5217% 0;mask-position:56.5217% 0}.k14>span{-webkit-mask-position:60.8696% 0;mask-position:60.8696% 0}.k15>span{-webkit-mask-position:65.2174% 0;mask-position:65.2174% 0}.k16>span{-webkit-mask-position:69.5652% 0;mask-position:69.5652% 0}.k17>span{-webkit-mask-position:73.913% 0;mask-position:73.913% 0}.k18>span{-webkit-mask-position:78.2609% 0;mask-position:78.2609% 0}.k19>span{-webkit-mask-position:82.6087% 0;mask-position:82.6087% 0}.k20>span{-webkit-mask-position:86.9565% 0;mask-position:86.9565% 0}.k21>span{-webkit-mask-position:91.3043% 0;mask-position:91.3043% 0}.k22>span{-webkit-mask-position:95.6522% 0;mask-position:95.6522% 0}.k23>span{-webkit-mask-position:100% 0;mask-position:100% 0}
+</style>
+</helmet>
+<div style="width: 1280px; height: 900px; box-sizing: border-box; padding: 36px 40px; background: #ECE9E2; font-family: 'Geist', system-ui, sans-serif; color: #161616; display: flex; flex-direction: column; gap: 26px">
+
+  <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px">
+    <h1 style="margin: 0; font-family: 'Space Mono', monospace; font-size: 28px; font-weight: 700; letter-spacing: 3px">PL-1 DESIGN SYSTEM</h1>
+    <span style="font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 1.2px; color: #4A4741">ICONS: PHOSPHOR DUOTONE (MIT) · TYPE: GEIST, GEIST MONO, SPACE MONO (OFL)</span>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px">
+
+    <section style="display: flex; flex-direction: column; gap: 12px">
+      <h2 style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; color: #4A4741">COLOR</h2>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{swatches}}" as="c" hint-placeholder-count="8">
+          <div style="display: flex; flex-direction: column; gap: 5px">
+            <span style="height: 52px; border-radius: 10px; background: {{c.hex}}; border: 1px solid rgba(0,0,0,0.18)"></span>
+            <span style="font-size: 12px; font-weight: 700">{{c.name}}</span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #4A4741">{{c.hex}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 12px">
+      <h2 style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; color: #4A4741">TYPE</h2>
+      <div style="display: flex; flex-direction: column; gap: 10px; padding: 16px; border-radius: 16px; background: #F1EEE8; border: 1px solid #BDB7AB">
+        <div style="font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700; letter-spacing: 2px">PIPELINE</div>
+        <div style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #4A4741">Space Mono 700 · printed device labels only</div>
+        <div style="font-size: 18px; font-weight: 600">Head Hunters (1973)</div>
+        <div style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #4A4741">Geist 600 · titles and anything you read</div>
+        <div style="font-family: 'Geist Mono', monospace; font-size: 14px; font-weight: 600">FLAC 16/44 · 241 MB · 4/4</div>
+        <div style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #4A4741">Geist Mono · data, labels, status</div>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 12px">
+      <h2 style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; color: #4A4741">RULES</h2>
+      <div style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 1.4">
+        <sc-for list="{{rules}}" as="r" hint-placeholder-count="5">
+          <div style="display: flex; gap: 10px; padding: 10px 12px; border-radius: 12px; background: #F1EEE8; border: 1px solid #BDB7AB">
+            <span style="font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: #FF5B14">{{r.n}}</span>
+            <span>{{r.text}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </div>
+
+  <section style="display: flex; flex-direction: column; gap: 12px">
+    <h2 style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; color: #4A4741">ICONS · TWO-TONE: INK ON TOP, SIGNAL COLOR BEHIND</h2>
+    <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px">
+      <sc-for list="{{icons}}" as="i" hint-placeholder-count="24">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 4px 8px; border-radius: 12px; background: {{i.tile}}">
+          <span class="ico {{i.k}}" role="img" aria-label="{{i.name}}" style="width: 32px; height: 32px"><span class="b" style="background: {{i.back}}"></span><span class="f" style="background: {{i.ink}}"></span></span>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; font-weight: 600; color: {{i.ink}}; text-align: center">{{i.name}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 12px">
+    <h2 style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; color: #4A4741">MINIDISCS · SHELL COLOR SHOWS WHERE THE MUSIC CAME FROM</h2>
+    <div style="display: flex; gap: 22px; align-items: flex-end">
+      <sc-for list="{{discs}}" as="d" hint-placeholder-count="4">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+          <div role="img" aria-label="{{d.name}} minidisc" style="position: relative; width: 104px; height: 112px; border-radius: 6px 6px 8px 8px; background: {{d.shell}}; border: 1px solid rgba(0,0,0,0.3); box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -2px 0 rgba(0,0,0,0.15), 0 8px 14px -4px rgba(0,0,0,0.35)">
+            <div style="position: absolute; top: 8px; left: 8px; right: 8px; height: 42px; border-radius: 3px; background: #FAFAF7"></div>
+            <div style="position: absolute; bottom: 8px; left: 20px; right: 20px; height: 42px; border-radius: 3px; background: linear-gradient(180deg, #F1F1F2 0%, #C3C5C9 55%, #9EA1A6 100%); border: 1px solid rgba(0,0,0,0.3)"></div>
+            <div style="position: absolute; bottom: 9px; left: 6px; width: 8px; height: 8px; border-radius: 1px; background: rgba(0,0,0,0.45)"></div>
+          </div>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 1px">{{d.name}}</span>
+        </div>
+      </sc-for>
+      <div style="flex: 1"></div>
+      <div style="display: flex; flex-direction: column; gap: 10px; width: 300px">
+        <span style="height: 60px; display: inline-flex; align-items: center; justify-content: center; gap: 12px; border-radius: 16px; border: 1px solid #B8400B; background: linear-gradient(180deg, #FF7333 0%, #FF5B14 60%, #EE4F0B 100%); color: #141414; font-family: 'Space Mono', monospace; font-size: 16px; font-weight: 700; letter-spacing: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), 0 4px 0 #B8400B">PRIMARY KEY</span>
+        <span style="height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 14px; border: 1px solid #B0AA9E; background: #F7F5F0; color: #161616; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1.2px; box-shadow: inset 0 1px 0 #FFFFFF, 0 3px 0 #B0AA9E">SECONDARY KEY</span>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const names = ['Search', 'Download', 'Tag', 'Convert', 'Library', 'Soulseek', 'Usenet', 'BitTorrent', 'Local', 'Queue', 'iOpenPod', 'Sources', 'Cassette', 'Setup', 'Eject', 'Best', 'Done', 'Minimize', 'List', 'Backdrop', 'Skin', 'Add', 'Levels', 'Music'];
+    const backs = { Soulseek: '#4D7CFF', Usenet: '#FFC21A', BitTorrent: '#2FCB7E', Local: '#A3A3A0', Download: '#FF5B14', Eject: '#FF5B14', Skin: '#FF5B14', iOpenPod: '#FF5B14', Best: '#FF5B14' };
+    const icons = names.map((name, i) => {
+      const onScreen = i % 2 === 1;
+      return { k: 'k' + i, name, tile: onScreen ? '#0C0C0D' : '#F1EEE8', ink: onScreen ? '#F4F4F2' : '#161616', back: backs[name] || (onScreen ? '#5C5C60' : '#D3CEC4') };
+    });
+    return {
+      icons,
+      swatches: [
+        { name: 'Ivory body', hex: '#ECE9E2' },
+        { name: 'Graphite', hex: '#29292D' },
+        { name: 'Screen', hex: '#0C0C0D' },
+        { name: 'Action', hex: '#FF5B14' },
+        { name: 'Soulseek', hex: '#4D7CFF' },
+        { name: 'Usenet', hex: '#FFC21A' },
+        { name: 'BitTorrent', hex: '#2FCB7E' },
+        { name: 'Local', hex: '#A3A3A0' }
+      ],
+      rules: [
+        { n: '01', text: 'Orange means “do this”: one primary key per screen, plus the active marker.' },
+        { n: '02', text: 'Each source owns one color, used for its LED, icon and disc shell. Nothing else uses it.' },
+        { n: '03', text: 'The screen is always black with white text, on every skin.' },
+        { n: '04', text: 'Skins change the body (Ivory, Graphite). Backdrops: White, Black, Yuki Posters, uploads.' },
+        { n: '05', text: 'Device labels in Space Mono; anything you read in Geist; numbers in Geist Mono.' }
+      ],
+      discs: [
+        { name: 'SOULSEEK', shell: 'linear-gradient(160deg, #7FA0FF 0%, #4D7CFF 45%, #2F57D9 100%)' },
+        { name: 'USENET', shell: 'linear-gradient(160deg, #FFE07A 0%, #FFC21A 45%, #D99A00 100%)' },
+        { name: 'BITTORRENT', shell: 'linear-gradient(160deg, #74E3AA 0%, #2FCB7E 45%, #189A5A 100%)' },
+        { name: 'LOCAL', shell: 'linear-gradient(160deg, #8A8A90 0%, #5E5E64 45%, #3A3A3F 100%)' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

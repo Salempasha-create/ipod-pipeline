@@ -12,6 +12,7 @@ class DummyTarget(Target):
     id = "dummy"
     name = "Dummy target"
     description = "Copies finished files into a folder. Placeholder until the library target lands."
+    icon = "library"
     settings_schema = (
         SettingField(
             "folder",

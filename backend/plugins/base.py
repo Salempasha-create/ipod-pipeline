@@ -105,6 +105,8 @@ class Plugin(ABC):
     id: ClassVar[str]
     name: ClassVar[str]
     description: ClassVar[str] = ""
+    #: Icon name from the UI's duotone set (DESIGN.md §8), e.g. "soulseek" or "tag".
+    icon: ClassVar[str | None] = None
     settings_schema: ClassVar[tuple[SettingField, ...]] = ()
 
     def __init__(self, settings: Mapping[str, Any] | None = None) -> None:
@@ -117,8 +119,33 @@ class Plugin(ABC):
             "id": cls.id,
             "name": cls.name,
             "description": cls.description,
+            "icon": cls.icon,
             "settings_schema": [field.to_dict() for field in cls.settings_schema],
         }
+
+
+@dataclass(frozen=True)
+class SearchResult:
+    """One release a source can download (SPEC §3.2)."""
+
+    id: str
+    kind: str  # "album" or "track"
+    title: str
+    artist: str
+    format: str  # FLAC, ALAC, MP3, AAC, OGG, OPUS, ...
+    size_bytes: int
+    track_count: int
+    year: int | None = None
+    bit_depth: int | None = None
+    sample_rate: int | None = None
+    bitrate: int | None = None
+    tracks_expected: int | None = None
+    speed: int = 0  # 0-5
+    free_slot: bool = True
+    uploader: str | None = None  # e.g. "vinylcrate_88 · free slot"
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
 
 
 class Source(Plugin):
@@ -128,6 +155,28 @@ class Source(Plugin):
 
     #: Request used by the UI's "Run test job" button; ``None`` hides the button.
     test_request: ClassVar[dict[str, Any] | None] = None
+    #: Four-letter code printed next to the source's LED, e.g. "SLSK" (DESIGN.md §4).
+    code: ClassVar[str | None] = None
+    #: The source's own color (hex), used for its LED, icon backing and disc shell.
+    color: ClassVar[str | None] = None
+
+    @classmethod
+    def describe(cls) -> dict[str, Any]:
+        info = super().describe()
+        info["code"] = cls.code
+        info["color"] = cls.color
+        return info
+
+    @classmethod
+    def can_search(cls) -> bool:
+        return cls.search is not Source.search
+
+    async def search(self, query: str) -> list[SearchResult]:
+        """Search this source. Sources that can search override this.
+
+        To download a result, the UI starts a job with ``{"result": result.to_dict()}``.
+        """
+        raise NotImplementedError
 
     @abstractmethod
     async def run_job(self, request: Mapping[str, Any], ctx: JobContext) -> list[Path]:

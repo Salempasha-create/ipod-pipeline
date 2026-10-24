@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pipeline PL-1: Search</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500;600;700&amp;family=Space+Mono:wght@700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#FF5B14}a:hover{color:#E24E0D}
+button{font:inherit}
+button:focus-visible,input:focus-visible{outline:3px solid #FF5B14;outline-offset:2px}
+.ico{position:relative;display:inline-block;flex:none}
+.ico>span{position:absolute;inset:0;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-size:2400% 100%;mask-size:2400% 100%}
+.ico>.b{-webkit-mask-image:url(/_blob/1e9addcf6b6835a7670e50deabb3ba6d);mask-image:url(/_blob/1e9addcf6b6835a7670e50deabb3ba6d)}
+.ico>.f{-webkit-mask-image:url(/_blob/d3690e2c4fe8983a1f335ae357305038);mask-image:url(/_blob/d3690e2c4fe8983a1f335ae357305038)}
+.k0>span{-webkit-mask-position:0% 0;mask-position:0% 0}.k1>span{-webkit-mask-position:4.3478% 0;mask-position:4.3478% 0}.k2>span{-webkit-mask-position:8.6957% 0;mask-position:8.6957% 0}.k3>span{-webkit-mask-position:13.0435% 0;mask-position:13.0435% 0}.k4>span{-webkit-mask-position:17.3913% 0;mask-position:17.3913% 0}.k5>span{-webkit-mask-position:21.7391% 0;mask-position:21.7391% 0}.k6>span{-webkit-mask-position:26.087% 0;mask-position:26.087% 0}.k7>span{-webkit-mask-position:30.4348% 0;mask-position:30.4348% 0}.k8>span{-webkit-mask-position:34.7826% 0;mask-position:34.7826% 0}.k9>span{-webkit-mask-position:39.1304% 0;mask-position:39.1304% 0}.k10>span{-webkit-mask-position:43.4783% 0;mask-position:43.4783% 0}.k11>span{-webkit-mask-position:47.8261% 0;mask-position:47.8261% 0}.k12>span{-webkit-mask-position:52.1739% 0;mask-position:52.1739% 0}.k13>span{-webkit-mask-position:56.5217% 0;mask-position:56.5217% 0}.k14>span{-webkit-mask-position:60.8696% 0;mask-position:60.8696% 0}.k15>span{-webkit-mask-position:65.2174% 0;mask-position:65.2174% 0}.k16>span{-webkit-mask-position:69.5652% 0;mask-position:69.5652% 0}.k17>span{-webkit-mask-position:73.913% 0;mask-position:73.913% 0}.k18>span{-webkit-mask-position:78.2609% 0;mask-position:78.2609% 0}.k19>span{-webkit-mask-position:82.6087% 0;mask-position:82.6087% 0}.k20>span{-webkit-mask-position:86.9565% 0;mask-position:86.9565% 0}.k21>span{-webkit-mask-position:91.3043% 0;mask-position:91.3043% 0}.k22>span{-webkit-mask-position:95.6522% 0;mask-position:95.6522% 0}.k23>span{-webkit-mask-position:100% 0;mask-position:100% 0}
+.grain{position:absolute;inset:0;pointer-events:none;border-radius:inherit;background-image:url(/_blob/3a32f07767f1b6218ed8ad12c68f6239);background-size:256px 256px;opacity:0.6}
+</style>
+</helmet>
+<div style="min-height: 1240px; box-sizing: border-box; padding: 48px 24px; background: {{backdrop}}; font-family: 'Geist', system-ui, sans-serif; color: {{t.ink}}">
+
+  <div style="position: relative; max-width: 1280px; margin: 0 auto; box-sizing: border-box; padding: 26px; border-radius: 34px; background: {{t.body}}; border: 1px solid {{t.seam}}; box-shadow: inset 0 1px 0 {{t.hi}}, inset 0 -3px 0 rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.12), 0 40px 80px -24px rgba(0,0,0,0.45); display: flex; flex-direction: column; gap: 22px">
+    <span class="grain" aria-hidden="true"></span>
+
+    <header style="position: relative; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px">
+      <div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap">
+        <span style="font-family: 'Space Mono', monospace; font-size: 26px; font-weight: 700; letter-spacing: 3px">PIPELINE</span>
+        <span style="font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; color: {{t.soft}}">PL-1 · MUSIC FETCHER</span>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap" aria-label="Source status">
+        <sc-for list="{{sources}}" as="s" hint-placeholder-count="4">
+          <span style="display: inline-flex; align-items: center; gap: 7px; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1px; color: {{t.soft}}">
+            <span aria-hidden="true" style="width: 9px; height: 9px; border-radius: 50%; background: {{s.color}}; box-shadow: 0 0 8px {{s.color}}"></span>
+            {{s.code}}
+          </span>
+        </sc-for>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px">
+        <div role="img" aria-label="Library holds 1,204 albums" style="display: inline-flex; align-items: baseline; gap: 8px; padding: 7px 12px; border-radius: 10px; background: #0C0C0D; box-shadow: inset 0 2px 4px rgba(0,0,0,0.6), 0 1px 0 {{t.hi}}">
+          <span style="font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 600; color: #A3A3A0">LIB</span>
+          <span style="font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700; color: #FF5B14; letter-spacing: 2px">001204</span>
+        </div>
+        <button aria-label="Minimize" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid {{t.keyEdge}}; background: {{t.key}}; box-shadow: inset 0 1px 0 {{t.hi}}, 0 2px 0 {{t.keyEdge}}; cursor: pointer; display: inline-flex; align-items: center; justify-content: center">
+          <span class="ico k17" aria-hidden="true" style="width: 20px; height: 20px"><span class="b" style="background: transparent"></span><span class="f" style="background: {{t.ink}}"></span></span>
+        </button>
+        <button aria-label="Close (eject)" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid {{t.keyEdge}}; background: {{t.key}}; box-shadow: inset 0 1px 0 {{t.hi}}, 0 2px 0 {{t.keyEdge}}; cursor: pointer; display: inline-flex; align-items: center; justify-content: center">
+          <span class="ico k14" aria-hidden="true" style="width: 22px; height: 22px"><span class="b" style="background: #FF5B14"></span><span class="f" style="background: {{t.ink}}"></span></span>
+        </button>
+      </div>
+    </header>
+
+    <div style="position: relative; display: flex; flex-wrap: wrap; gap: 22px">
+
+      <section aria-label="Screen" style="flex: 999 1 640px; min-width: 0; padding: 10px; border-radius: 22px; background: {{t.bezel}}; box-shadow: inset 0 3px 8px rgba(0,0,0,0.35), 0 1px 0 {{t.hi}}">
+        <div style="border-radius: 14px; background: #0C0C0D; color: #F4F4F2; padding: 18px 22px 20px; display: flex; flex-direction: column; gap: 16px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04)">
+
+          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+            <nav aria-label="Screen pages" style="display: flex; gap: 20px; flex-wrap: wrap">
+              <span aria-current="page" style="font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 700; letter-spacing: 1px; color: #F4F4F2; padding-bottom: 5px; border-bottom: 3px solid #FF5B14">SEARCH</span>
+              <span style="font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 600; letter-spacing: 1px; color: #A3A3A0; padding-bottom: 5px; border-bottom: 3px solid transparent">QUEUE 3</span>
+              <span style="font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 600; letter-spacing: 1px; color: #A3A3A0; padding-bottom: 5px; border-bottom: 3px solid transparent">LIBRARY</span>
+              <span style="font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 600; letter-spacing: 1px; color: #A3A3A0; padding-bottom: 5px; border-bottom: 3px solid transparent">SOURCES</span>
+            </nav>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500; color: #A3A3A0">4 RESULTS · 3 SOURCES · 0.8 S</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label for="q" style="font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; color: #A3A3A0">FIND</label>
+            <div style="display: flex; align-items: center; gap: 12px; border-bottom: 2px solid #3A3A3D; padding-bottom: 8px">
+              <span class="ico k0" aria-hidden="true" style="width: 28px; height: 28px"><span class="b" style="background: #FF5B14"></span><span class="f" style="background: #F4F4F2"></span></span>
+              <input id="q" type="search" value="herbie hancock head hunters" style="flex: 1; min-width: 0; border: 0; background: transparent; color: #F4F4F2; caret-color: #FF5B14; font-family: 'Geist', sans-serif; font-size: 26px; font-weight: 500; padding: 4px 0">
+            </div>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+            <button aria-pressed="true" style="height: 40px; padding: 0 14px; border-radius: 999px; border: 1.5px solid #F4F4F2; background: #F4F4F2; color: #0C0C0D; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer">ALL SOURCES</button>
+            <button aria-pressed="false" style="height: 40px; padding: 0 14px; border-radius: 999px; border: 1.5px solid #4A4A4E; background: transparent; color: #F4F4F2; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer">FLAC ONLY</button>
+            <button aria-pressed="false" style="height: 40px; padding: 0 14px; border-radius: 999px; border: 1.5px solid #4A4A4E; background: transparent; color: #F4F4F2; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer">MP3 ONLY</button>
+            <span style="display: inline-flex; align-items: center; gap: 8px; margin-left: 6px; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 1px; color: #D6D6D3">
+              <input id="complete" type="checkbox" checked style="width: 18px; height: 18px; accent-color: #FF5B14">
+              <label for="complete">COMPLETE ALBUMS FIRST</label>
+            </span>
+          </div>
+
+          <div style="overflow-x: auto">
+            <div style="min-width: 720px; display: flex; flex-direction: column; gap: 4px">
+              <div style="display: grid; grid-template-columns: 40px minmax(240px, 1fr) 128px 84px 64px 60px; gap: 14px; padding: 0 14px 6px 17px; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 1.2px; color: #8E8E8B">
+                <span></span><span>RELEASE</span><span>QUALITY</span><span>SIZE</span><span>TRACKS</span><span>SPEED</span>
+              </div>
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="4">
+                <button onClick="{{r.pick}}" aria-pressed="{{r.pressed}}" style="display: grid; grid-template-columns: 40px minmax(240px, 1fr) 128px 84px 64px 60px; gap: 14px; align-items: center; width: 100%; min-height: 68px; padding: 8px 14px; box-sizing: border-box; border: 1px solid {{r.edge}}; border-left: 3px solid {{r.bar}}; border-radius: 12px; background: {{r.bg}}; color: #F4F4F2; text-align: left; cursor: pointer">
+                  <span class="ico {{r.icon}}" aria-hidden="true" style="width: 32px; height: 32px"><span class="b" style="background: {{r.color}}"></span><span class="f" style="background: #F4F4F2"></span></span>
+                  <span style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+                    <span style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 18px; font-weight: 600; line-height: 1.25">
+                      {{r.title}}
+                      <sc-if value="{{r.rec}}" hint-placeholder-val="{{ false }}">
+                        <span style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px 2px 5px; border-radius: 999px; background: #FF5B14; color: #0C0C0D; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 1px; line-height: 18px">
+                          <span class="ico k15" aria-hidden="true" style="width: 14px; height: 14px"><span class="b" style="background: #FFD7C2"></span><span class="f" style="background: #0C0C0D"></span></span>
+                          BEST
+                        </span>
+                      </sc-if>
+                    </span>
+                    <span style="font-size: 14px; color: #A9A9A6">{{r.sub}}</span>
+                  </span>
+                  <span><span style="display: inline-block; padding: 3px 9px; border-radius: 999px; border: 1.5px {{r.pillStyle}} #D6D6D3; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 600; color: #F4F4F2">{{r.quality}}</span></span>
+                  <span style="font-family: 'Geist Mono', monospace; font-size: 14px; color: #D6D6D3">{{r.size}}</span>
+                  <span style="font-family: 'Geist Mono', monospace; font-size: 14px; color: #D6D6D3">{{r.tracks}}</span>
+                  <span role="img" aria-label="{{r.speedLabel}}" style="display: inline-flex; align-items: flex-end; gap: 3px; height: 18px">
+                    <sc-for list="{{r.bars}}" as="b" hint-placeholder-count="5">
+                      <span style="width: 5px; height: {{b.h}}; border-radius: 1px; background: {{b.bg}}"></span>
+                    </sc-for>
+                  </span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; padding-top: 14px; border-top: 1px solid #2A2A2D">
+            <div style="flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+              <span style="font-size: 16px; font-weight: 600">{{pickedTitle}}</span>
+              <span style="font-size: 14px; color: #CFCFCB">{{pickedNote}}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 1px; color: #F4F4F2">
+              <span style="display: inline-flex; align-items: center; gap: 6px"><span class="ico k2" aria-hidden="true" style="width: 20px; height: 20px"><span class="b" style="background: #5C5C60"></span><span class="f" style="background: #F4F4F2"></span></span>TAG</span>
+              <span aria-hidden="true" style="color: #6E6E6B">——</span>
+              <span style="display: inline-flex; align-items: center; gap: 6px"><span class="ico k3" aria-hidden="true" style="width: 20px; height: 20px"><span class="b" style="background: #5C5C60"></span><span class="f" style="background: #F4F4F2"></span></span>{{convertLabel}}</span>
+              <span aria-hidden="true" style="color: #6E6E6B">——</span>
+              <span style="display: inline-flex; align-items: center; gap: 6px"><span class="ico k4" aria-hidden="true" style="width: 20px; height: 20px"><span class="b" style="background: #5C5C60"></span><span class="f" style="background: #F4F4F2"></span></span>LIBRARY</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside aria-label="Controls" style="flex: 1 1 320px; display: flex; flex-direction: column; align-items: center; gap: 18px">
+
+        <nav aria-label="Click wheel" style="position: relative; width: 300px; height: 300px; flex: none; border-radius: 50%; background: radial-gradient(circle at 50% 30%, {{t.wheelA}} 0%, {{t.wheelB}} 100%); border: 1px solid {{t.seam}}; box-shadow: inset 0 2px 0 {{t.hi}}, inset 0 -10px 18px rgba(0,0,0,0.12), 0 14px 26px -8px rgba(0,0,0,0.35)">
+          <span aria-hidden="true" style="position: absolute; top: 50%; left: 50%; width: 132px; height: 132px; transform: translate(-50%, -50%); border-radius: 50%; background: {{t.recess}}; box-shadow: inset 0 3px 7px rgba(0,0,0,0.3), 0 1px 0 {{t.hi}}"></span>
+
+          <button aria-current="page" style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 96px; height: 78px; border: 0; border-radius: 16px; background: transparent; color: {{t.ink}}; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px">
+            <span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: #FF5B14; box-shadow: 0 0 8px #FF5B14"></span>
+            <span class="ico k0" aria-hidden="true" style="width: 26px; height: 26px"><span class="b" style="background: {{t.iconBack}}"></span><span class="f" style="background: {{t.ink}}"></span></span>
+            <span style="font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1.5px">SEARCH</span>
+          </button>
+          <button style="position: absolute; top: 50%; right: 6px; transform: translateY(-50%); width: 84px; height: 78px; border: 0; border-radius: 16px; background: transparent; color: {{t.ink}}; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px">
+            <span class="ico k9" aria-hidden="true" style="width: 26px; height: 26px"><span class="b" style="background: {{t.iconBack}}"></span><span class="f" style="background: {{t.ink}}"></span></span>
+            <span style="font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1.5px">QUEUE</span>
+          </button>
+          <button style="position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); width: 96px; height: 78px; border: 0; border-radius: 16px; background: transparent; color: {{t.ink}}; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px">
+            <span class="ico k4" aria-hidden="true" style="width: 26px; height: 26px"><span class="b" style="background: {{t.iconBack}}"></span><span class="f" style="background: {{t.ink}}"></span></span>
+            <span style="font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1.5px">LIBRARY</span>
+          </button>
+          <button style="position: absolute; top: 50%; left: 6px; transform: translateY(-50%); width: 84px; height: 78px; border: 0; border-radius: 16px; background: transparent; color: {{t.ink}}; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px">
+            <span class="ico k11" aria-hidden="true" style="width: 26px; height: 26px"><span class="b" style="background: {{t.iconBack}}"></span><span class="f" style="background: {{t.ink}}"></span></span>
+            <span style="font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1.5px">SOURCES</span>
+          </button>
+
+          <button aria-label="Select" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 108px; height: 108px; border-radius: 50%; border: 1px solid {{t.centerEdge}}; background: {{t.center}}; box-shadow: inset 0 3px 6px rgba(0,0,0,0.35), 0 1px 0 {{t.hi}}; cursor: pointer"></button>
+        </nav>
+
+        <button style="width: 100%; max-width: 320px; height: 68px; display: inline-flex; align-items: center; justify-content: center; gap: 12px; border-radius: 16px; border: 1px solid #B8400B; background: linear-gradient(180deg, #FF7333 0%, #FF5B14 60%, #EE4F0B 100%); color: #141414; font-family: 'Space Mono', monospace; font-size: 17px; font-weight: 700; letter-spacing: 2px; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), 0 4px 0 #B8400B, 0 10px 18px -6px rgba(184,64,11,0.6)">
+          <span class="ico k1" aria-hidden="true" style="width: 28px; height: 28px"><span class="b" style="background: #FFD7C2"></span><span class="f" style="background: #141414"></span></span>
+          DOWNLOAD
+        </button>
+
+        <div style="width: 100%; max-width: 320px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+          <button style="height: 52px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 14px; border: 1px solid {{t.keyEdge}}; background: {{t.key}}; color: {{t.ink}}; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1.2px; cursor: pointer; box-shadow: inset 0 1px 0 {{t.hi}}, 0 3px 0 {{t.keyEdge}}">
+            <span class="ico k20" aria-hidden="true" style="width: 22px; height: 22px"><span class="b" style="background: #FF5B14"></span><span class="f" style="background: {{t.ink}}"></span></span>
+            SKIN
+          </button>
+          <button style="height: 52px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 14px; border: 1px solid {{t.keyEdge}}; background: {{t.key}}; color: {{t.ink}}; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1.2px; cursor: pointer; box-shadow: inset 0 1px 0 {{t.hi}}, 0 3px 0 {{t.keyEdge}}">
+            <span class="ico k13" aria-hidden="true" style="width: 22px; height: 22px"><span class="b" style="background: {{t.iconBack}}"></span><span class="f" style="background: {{t.ink}}"></span></span>
+            SETUP
+          </button>
+        </div>
+
+        <div aria-hidden="true" style="width: 100%; max-width: 320px; height: 64px; border-radius: 14px; background-color: {{t.recess}}; background-image: radial-gradient(circle, {{t.dots}} 1.8px, transparent 2.2px); background-size: 10px 10px; background-position: 5px 5px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.25)"></div>
+      </aside>
+    </div>
+
+    <section aria-label="Changer" style="position: relative; padding: 18px; border-radius: 24px; background: {{t.slot}}; box-shadow: inset 0 3px 8px rgba(0,0,0,0.18), 0 1px 0 {{t.hi}}; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+        <div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap">
+          <h2 style="margin: 0; font-family: 'Space Mono', monospace; font-size: 16px; font-weight: 700; letter-spacing: 2px">CHANGER</h2>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 1px; color: {{t.soft}}">3 DISCS LOADED · 1 READY · DISC COLOR = SOURCE</span>
+        </div>
+        <button style="height: 48px; display: inline-flex; align-items: center; gap: 10px; padding: 0 18px 0 14px; border-radius: 14px; border: 1px solid {{t.keyEdge}}; background: {{t.key}}; color: {{t.ink}}; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1.2px; cursor: pointer; box-shadow: inset 0 1px 0 {{t.hi}}, 0 3px 0 {{t.keyEdge}}">
+          <span class="ico k10" aria-hidden="true" style="width: 24px; height: 24px"><span class="b" style="background: #FF5B14"></span><span class="f" style="background: {{t.ink}}"></span></span>
+          SEND TO iOPENPOD
+        </button>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 14px">
+        <sc-for list="{{discs}}" as="d" hint-placeholder-count="3">
+          <div style="flex: 1 1 280px; min-width: 0; display: flex; gap: 16px; align-items: center; padding: 14px; border-radius: 18px; background: {{t.card}}; border: 1px solid {{t.seam}}">
+            <div role="img" aria-label="{{d.alt}}" style="position: relative; width: 112px; height: 120px; flex: none; border-radius: 6px 6px 8px 8px; background: {{d.shell}}; border: 1px solid rgba(0,0,0,0.3); box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -2px 0 rgba(0,0,0,0.15), 0 8px 14px -4px rgba(0,0,0,0.35)">
+              <div style="position: absolute; top: 9px; left: 9px; right: 9px; height: 48px; box-sizing: border-box; padding: 5px 6px; border-radius: 3px; background: #FAFAF7; box-shadow: 0 1px 1px rgba(0,0,0,0.2); overflow: hidden">
+                <div style="font-family: 'Geist', sans-serif; font-size: 10px; font-weight: 700; line-height: 1.2; color: #141414">{{d.album}}</div>
+                <div style="font-family: 'Geist Mono', monospace; font-size: 8px; font-weight: 600; line-height: 1.3; color: #4A4741; margin-top: 2px">{{d.artist}}</div>
+              </div>
+              <div style="position: absolute; bottom: 9px; left: 22px; right: 22px; height: 46px; border-radius: 3px; background: linear-gradient(180deg, #F1F1F2 0%, #C3C5C9 55%, #9EA1A6 100%); border: 1px solid rgba(0,0,0,0.3); box-shadow: inset 0 1px 0 #FFFFFF">
+                <div style="position: absolute; top: 10px; left: 50%; width: 22px; height: 24px; transform: translateX(-50%); border-radius: 2px; background: rgba(0,0,0,0.12)"></div>
+              </div>
+              <div style="position: absolute; bottom: 10px; left: 7px; width: 8px; height: 8px; border-radius: 1px; background: rgba(0,0,0,0.45)"></div>
+            </div>
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+                <span style="display: inline-flex; align-items: center; gap: 6px; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: {{t.soft}}">
+                  <span class="ico {{d.icon}}" aria-hidden="true" style="width: 18px; height: 18px"><span class="b" style="background: {{d.color}}"></span><span class="f" style="background: {{t.ink}}"></span></span>
+                  {{d.stage}}
+                </span>
+                <span style="font-family: 'Space Mono', monospace; font-size: 15px; font-weight: 700">{{d.pct}}</span>
+              </div>
+              <div style="font-size: 16px; font-weight: 600; line-height: 1.25">{{d.album}}</div>
+              <div style="font-size: 13px; color: {{t.soft}}">{{d.detail}}</div>
+              <div role="img" aria-label="{{d.pctLabel}}" style="display: flex; gap: 2px; height: 10px; margin-top: 2px">
+                <sc-for list="{{d.segs}}" as="g" hint-placeholder-count="20">
+                  <span style="flex: 1; border-radius: 1px; background: {{g.bg}}"></span>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+        <button style="flex: 0 1 200px; min-height: 148px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border-radius: 18px; border: 2px dashed {{t.seam}}; background: transparent; color: {{t.soft}}; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1.2px; cursor: pointer">
+          <span class="ico k21" aria-hidden="true" style="width: 28px; height: 28px"><span class="b" style="background: {{t.iconBack}}"></span><span class="f" style="background: {{t.ink}}"></span></span>
+          DROP FILES
+          <span style="font-family: 'Geist', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 0">or folders from your computer</span>
+        </button>
+      </div>
+    </section>
+
+    <footer style="position: relative; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; color: {{t.soft}}">
+      <span>FIND · TAG · CONVERT · CARRY</span>
+      <span>ALAC 16/44.1 · iPOD CLASSIC READY · SER. 0001</span>
+    </footer>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"skin":{"editor":"enum","default":"ivory","options":["ivory","graphite"]},"backdrop":{"editor":"enum","default":"white","options":["white","black"]},"$preview":{"width":1440,"height":1240}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const SKINS = {
+      ivory: { body: '#ECE9E2', seam: '#BDB7AB', hi: 'rgba(255,255,255,0.8)', ink: '#161616', soft: '#4A4741', bezel: '#D3CEC4', wheelA: '#F8F6F2', wheelB: '#D8D3C9', recess: '#CFCAC0', center: 'radial-gradient(circle at 50% 72%, #4A4A4F 0%, #2B2B2F 55%, #1E1E21 100%)', centerEdge: '#141416', key: '#F7F5F0', keyEdge: '#B0AA9E', slot: '#E0DCD3', card: '#F1EEE8', dots: '#3A3833', iconBack: '#D3CEC4', dim: 'rgba(22,22,22,0.14)' },
+      graphite: { body: '#29292D', seam: '#45454C', hi: 'rgba(255,255,255,0.08)', ink: '#F2F1EC', soft: '#BAB8B1', bezel: '#151517', wheelA: '#3C3C41', wheelB: '#222226', recess: '#1B1B1E', center: 'radial-gradient(circle at 50% 72%, #FFFFFF 0%, #ECE9E2 55%, #CBC6BC 100%)', centerEdge: '#8F8A80', key: '#35353B', keyEdge: '#1A1A1D', slot: '#1F1F22', card: '#2E2E33', dots: '#0B0B0C', iconBack: '#4A4A51', dim: 'rgba(242,241,236,0.16)' }
+    };
+    const t = SKINS[this.props.skin ?? 'ivory'] || SKINS.ivory;
+    const backdrop = (this.props.backdrop ?? 'white') === 'black' ? '#0B0B0C' : '#F4F4F2';
+
+    const SRC = {
+      soulseek: { name: 'Soulseek', code: 'SLSK', color: '#4D7CFF', icon: 'k5', shell: 'linear-gradient(160deg, #7FA0FF 0%, #4D7CFF 45%, #2F57D9 100%)' },
+      usenet: { name: 'Usenet', code: 'USNT', color: '#FFC21A', icon: 'k6', shell: 'linear-gradient(160deg, #FFE07A 0%, #FFC21A 45%, #D99A00 100%)' },
+      torrent: { name: 'BitTorrent', code: 'BTRT', color: '#2FCB7E', icon: 'k7', shell: 'linear-gradient(160deg, #74E3AA 0%, #2FCB7E 45%, #189A5A 100%)' },
+      local: { name: 'Local files', code: 'LOCL', color: '#A3A3A0', icon: 'k8', shell: 'linear-gradient(160deg, #8A8A90 0%, #5E5E64 45%, #3A3A3F 100%)' }
+    };
+    const sources = [SRC.soulseek, SRC.usenet, SRC.torrent, SRC.local];
+
+    const picked = (this.state && this.state.picked) || 'r1';
+    const rowsData = [
+      { id: 'r1', src: 'soulseek', title: 'Head Hunters (1973)', who: 'vinylcrate_88 · free slot', quality: 'FLAC 16/44', lossy: false, size: '241 MB', tracks: '4/4', speed: 4, rec: true, note: 'CD-quality lossless. Converts to ALAC 16/44.1 with no quality loss.' },
+      { id: 'r2', src: 'usenet', title: 'Head Hunters (2015 Remaster)', who: 'posted 3 days ago', quality: 'FLAC 24/96', lossy: false, size: '902 MB', tracks: '4/4', speed: 5, rec: false, note: 'Hi-res. Will be converted down to 16/44.1 so the iPod can play it.' },
+      { id: 'r3', src: 'torrent', title: 'Herbie Hancock - Head Hunters', who: '12 seeders', quality: 'MP3 320', lossy: true, size: '98 MB', tracks: '4/4', speed: 2, rec: false, note: 'Lossy. Kept as MP3 320, not converted (converting would only add size).' },
+      { id: 'r4', src: 'soulseek', title: 'Head Hunters (partial)', who: 'jazzfreak · 6 in queue', quality: 'FLAC 16/44', lossy: false, size: '160 MB', tracks: '3/4', speed: 3, rec: false, note: 'Incomplete: 3 of 4 tracks. Will check the uploader’s folder for the rest.' }
+    ];
+    const rows = rowsData.map((r) => {
+      const s = SRC[r.src];
+      const sel = r.id === picked;
+      return Object.assign({}, r, {
+        icon: s.icon,
+        color: s.color,
+        sub: s.name + ' · ' + r.who,
+        pressed: sel ? 'true' : 'false',
+        bg: sel ? '#1A1A1C' : 'transparent',
+        edge: sel ? 'rgba(244,244,242,0.35)' : 'transparent',
+        bar: sel ? '#FF5B14' : 'transparent',
+        pillStyle: r.lossy ? 'dashed' : 'solid',
+        speedLabel: 'Speed ' + r.speed + ' of 5',
+        bars: [1, 2, 3, 4, 5].map((i) => ({ h: (3 + i * 3) + 'px', bg: i <= r.speed ? s.color : '#2E2E31' })),
+        pick: () => this.setState({ picked: r.id })
+      });
+    });
+    const cur = rowsData.find((r) => r.id === picked) || rowsData[0];
+
+    const segs = (filled, color) => Array.from({ length: 20 }, (_, i) => ({ bg: i < filled ? color : t.dim }));
+    const discs = [
+      { album: 'Sunday at the Village Vanguard', artist: 'BILL EVANS TRIO', stage: 'CONVERTING', icon: 'k3', pct: '70%', pctLabel: '70 percent', detail: 'FLAC 24/96 → ALAC 16/44.1', s: SRC.usenet, filled: 14 },
+      { album: 'Everybody Loves the Sunshine', artist: 'ROY AYERS UBIQUITY', stage: 'TAGGING', icon: 'k2', pct: '45%', pctLabel: '45 percent', detail: 'MusicBrainz match · iPod Clean preset', s: SRC.soulseek, filled: 9 },
+      { album: 'Kind of Blue', artist: 'MILES DAVIS', stage: 'IN LIBRARY', icon: 'k16', pct: 'DONE', pctLabel: 'Complete', detail: 'Ready to send to iOpenPod', s: SRC.torrent, filled: 20 }
+    ].map((d) => Object.assign({}, d, {
+      shell: d.s.shell,
+      color: d.s.color,
+      alt: d.album + ' minidisc from ' + d.s.name,
+      segs: segs(d.filled, d.s.color)
+    }));
+
+    return {
+      t, backdrop, sources, rows, discs,
+      pickedTitle: cur.title + ' · ' + cur.quality + ' · ' + SRC[cur.src].name,
+      pickedNote: cur.note,
+      convertLabel: cur.lossy ? 'KEEP MP3' : 'ALAC 16/44.1'
+    };
+  }
+}
+</script>
+</body>
+</html>
