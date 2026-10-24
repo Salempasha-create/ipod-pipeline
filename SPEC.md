@@ -272,7 +272,7 @@ A Soulseek-only user enters a username and password, and setup is done.
 | **v0.1 — Core pipeline** | Plugin system, Soulseek source, Local files source, search & results picker, queue, MusicBrainz tagging with default preset, ALAC conversion, library folder |
 | **v0.2 — Batch input** | Playlist links, CSV/text import, batch review screen, wishlist |
 | **v0.3 — More sources** | Usenet, BitTorrent (built-in engine + external clients), shared indexer support |
-| **v0.4 — Handoff & onboarding** | iOpenPod detection and handoff, setup wizard, one-click dependency installer |
+| **v0.4 — Handoff & onboarding** | iOpenPod detection and handoff, setup wizard, one-click dependency installer, background picker (§16) |
 | **v1.0 — Public release** | Installers for all 3 OSes via GitHub Actions, update checker, docs, finalize issue templates and contributing guide (first versions exist) |
 | **Later** | Follow artists for new releases, Bandcamp / YouTube Music sources, more devices, Option C |
 
@@ -309,3 +309,29 @@ Each scope item is tracked as a GitHub issue under its milestone.
 - **GitHub Issues** — one per feature or bug; labels: `source`, `processor`, `target`, `ui`, `bug`, `core` (app-wide infrastructure).
 - **Milestones** — match §12.
 - **Projects board** — To Do → In Progress → Done.
+
+---
+
+## 16. Appearance: backgrounds
+
+### 16.1 Built-in backgrounds
+- **White** (default) and **Black**, as plain colors.
+- **Match system:** White in light mode, Black in dark mode.
+
+### 16.2 Built-in collections
+- None at launch. Image collections are bundled only when their license allows redistribution (§16.6).
+
+### 16.3 User images
+- Users can upload their own images or add a whole folder.
+- Uploads are **copied** into the app's user-data folder (per OS, via `platformdirs`). They never leave the user's computer.
+
+### 16.4 Background picker
+- Shows thumbnails of the built-in backgrounds, any built-in collections, and the user's uploads.
+
+### 16.5 Display and readability
+- Fit options: **fill / fit / center**.
+- **Darken** slider (0–80%) and optional **blur**, so UI text stays legible on any image.
+
+### 16.6 Third-party images
+- Third-party images are bundled only when their license allows redistribution.
+- The license is stored in `docs/third-party/`, and the images are credited in `docs/third-party/CREDITS.md`.
