@@ -1,0 +1,27 @@
+/* Duotone icons via CSS masks, as in the reference (mask-size 2400% 100%). */
+.ico {
+  position: relative;
+  display: inline-block;
+  flex: none;
+}
+
+.ico > span {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 2400% 100%;
+  mask-size: 2400% 100%;
+  -webkit-mask-position: var(--ico-pos);
+  mask-position: var(--ico-pos);
+}
+
+.ico > .ico-b {
+  -webkit-mask-image: var(--ico-back-url);
+  mask-image: var(--ico-back-url);
+}
+
+.ico > .ico-f {
+  -webkit-mask-image: var(--ico-front-url);
+  mask-image: var(--ico-front-url);
+}
