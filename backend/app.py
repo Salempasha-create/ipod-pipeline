@@ -17,6 +17,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
+from backend.backdrop_routes import backdrop_router
+from backend.backdrops import Backdrops
 from backend.jobs import Job, JobManager, JobStatus
 from backend.plugins.base import Plugin, PluginKind, Source
 from backend.plugins.discovery import PluginRegistry, discover
@@ -92,9 +94,11 @@ def create_app(
     jobs: JobManager | None = None,
     ui_dir: Path | None = None,
     allowed_hosts: list[str] | None = None,
+    backdrops: Backdrops | None = None,
 ) -> FastAPI:
     registry = registry if registry is not None else discover()
     store = store if store is not None else SettingsStore()
+    backdrops = backdrops if backdrops is not None else Backdrops(store)
     hosts = allowed_hosts or LOCAL_HOSTS
     state: dict[str, JobManager] = {}
 
@@ -225,6 +229,8 @@ def create_app(
         if album is None:
             raise HTTPException(404, "unknown album")
         open_in_file_manager(Path(album["folder"]))
+
+    app.include_router(backdrop_router(backdrops))
 
     ui = ui_dir or default_ui_dir()
     if (ui / "index.html").is_file():

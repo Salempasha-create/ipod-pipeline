@@ -124,7 +124,8 @@
   letter-spacing: 1px;
 }
 
-.filter-chip[aria-pressed="true"] {
+.filter-chip[aria-pressed="true"],
+.filter-chip[aria-checked="true"] {
   border-color: var(--screen-text);
   background: var(--screen-text);
   color: var(--screen);

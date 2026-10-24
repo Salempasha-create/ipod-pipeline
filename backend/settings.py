@@ -156,6 +156,20 @@ class SettingsStore:
                     saved[key] = value
             self._save()
 
+    # --- app-wide sections (e.g. appearance) ----------------------------
+
+    def section(self, name: str) -> Any:
+        """A copy of a top-level settings section, or None if it was never saved."""
+        value = self._data.get(name)
+        return json.loads(json.dumps(value)) if value is not None else None
+
+    def set_section(self, name: str, value: Any) -> None:
+        if name in ("version", "plugins"):
+            raise ValueError(f"{name!r} is reserved")
+        with self._lock:
+            self._data[name] = value
+            self._save()
+
     # --- keyring -------------------------------------------------------
 
     @staticmethod

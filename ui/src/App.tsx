@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { api, type DiscoveryError, type Job, type PluginInfo, type Skin } from "./api";
+import { api, type Appearance, type AppearanceChanges, type DiscoveryError, type Job, type PluginInfo } from "./api";
 import { Backdrop } from "./components/Backdrop";
 import { Changer } from "./components/Changer";
 import { ClickWheel, type Page } from "./components/ClickWheel";
@@ -9,6 +9,7 @@ import { PageTabs } from "./components/PageTabs";
 import { LibraryPage } from "./pages/LibraryPage";
 import { QueuePage } from "./pages/QueuePage";
 import { SearchPage } from "./pages/SearchPage";
+import { SetupPage } from "./pages/SetupPage";
 import { SourcesPage } from "./pages/SourcesPage";
 import { KNOWN_SOURCES, sourceStyle, type SourceStyle } from "./sources";
 
@@ -25,9 +26,18 @@ function readHash(): { view: View; query: string } {
 const initial = readHash();
 const JOBS_POLL_MS = 500;
 
+const DEFAULT_APPEARANCE: Appearance = {
+  skin: "ivory",
+  backdrop: { kind: "white", id: null },
+  fit: "fill",
+  darken: 0,
+  blur: false,
+  image_url: null,
+};
+
 export function App() {
   const [view, setView] = useState<View>(initial.view);
-  const [skin, setSkin] = useState<Skin>("ivory");
+  const [appearance, setAppearance] = useState<Appearance>(DEFAULT_APPEARANCE);
   const [plugins, setPlugins] = useState<PluginInfo[]>([]);
   const [errors, setErrors] = useState<DiscoveryError[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -46,9 +56,25 @@ export function App() {
     setDownload(() => action);
   }, []);
 
+  const skin = appearance.skin;
   useEffect(() => {
     document.documentElement.dataset.skin = skin;
   }, [skin]);
+
+  useEffect(() => {
+    api.appearance().then(setAppearance).catch(() => undefined);
+  }, []);
+
+  const changeAppearance = useCallback(async (changes: AppearanceChanges) => {
+    // Show the change right away, then keep what the backend saved.
+    setAppearance((a) => ({ ...a, ...changes }));
+    try {
+      setAppearance(await api.saveAppearance(changes));
+    } catch (err) {
+      setAppearance(await api.appearance());
+      throw err;
+    }
+  }, []);
 
   useEffect(() => {
     api
@@ -135,7 +161,13 @@ export function App() {
 
   return (
     <>
-      <Backdrop kind="white" />
+      <Backdrop
+        kind={appearance.image_url ? "image" : (appearance.backdrop.kind as "white" | "black" | "system")}
+        imageUrl={appearance.image_url}
+        fit={appearance.fit}
+        darken={appearance.darken}
+        blur={appearance.blur}
+      />
       <div className="stage">
         <div className="device">
           <span className="grain" aria-hidden="true" />
@@ -178,11 +210,7 @@ export function App() {
                   sourceFor={sourceFor}
                   onChange={replace}
                 />
-                {view === "setup" && (
-                  <div className="page">
-                    <p className="screen-hint">Backdrop settings are coming next.</p>
-                  </div>
-                )}
+                <SetupPage {...pageProps("setup")} appearance={appearance} onChange={changeAppearance} />
               </div>
             </section>
             <aside className="controls" aria-label="Controls">
@@ -209,7 +237,7 @@ export function App() {
                   icon="skin"
                   iconBack="var(--action)"
                   aria-label={`Skin: ${skin === "ivory" ? "Ivory" : "Graphite"}. Switch to ${skin === "ivory" ? "Graphite" : "Ivory"}`}
-                  onClick={() => setSkin((s) => (s === "ivory" ? "graphite" : "ivory"))}
+                  onClick={() => changeAppearance({ skin: skin === "ivory" ? "graphite" : "ivory" }).catch(() => undefined)}
                 >
                   SKIN
                 </Key>
