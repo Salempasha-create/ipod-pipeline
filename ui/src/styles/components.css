@@ -97,10 +97,6 @@
   border-bottom-color: var(--action);
 }
 
-.search-line input:focus-visible {
-  outline: none;
-}
-
 /* ---- Filter chips ---- */
 
 .chip-row {
@@ -154,8 +150,11 @@
 
 /* ---- Results ---- */
 
+/* Inner padding so a focused row's 3px + 2px focus ring isn't clipped by the scroll box. */
 .results-scroll {
   overflow-x: auto;
+  margin: -6px;
+  padding: 6px;
 }
 
 .results {

@@ -33,7 +33,7 @@ function Swatch({
   previewClass?: string;
 }) {
   return (
-    <button type="button" role="radio" aria-checked={selected} className="swatch" onClick={onSelect}>
+    <button type="button" aria-pressed={selected} className="swatch" onClick={onSelect}>
       <span className={`swatch-preview ${previewClass ?? ""}`} aria-hidden="true">
         {preview && <img src={preview} alt="" loading="lazy" decoding="async" />}
       </span>
@@ -76,7 +76,7 @@ function FolderImages({
   if (!folder.available) return <p className="screen-hint">This folder isn't available right now.</p>;
   return (
     <>
-      <div className="swatch-grid" role="radiogroup" aria-label={`Images in ${folder.name}`}>
+      <div className="swatch-grid" role="group" aria-label={`Images in ${folder.name}`}>
         {items.map((img) => (
           <Swatch
             key={img.id}
@@ -177,9 +177,9 @@ export function SetupPage({ active, registerPrimary, setStatus, appearance, onCh
         <h3 id="setup-skin" className="screen-label">
           SKIN
         </h3>
-        <div className="chip-row" role="radiogroup" aria-labelledby="setup-skin">
+        <div className="chip-row" role="group" aria-labelledby="setup-skin">
           {(["ivory", "graphite"] as Skin[]).map((skin) => (
-            <FilterChip key={skin} active={appearance.skin === skin} role="radio" aria-checked={appearance.skin === skin} aria-pressed={undefined} onClick={() => choose({ skin })}>
+            <FilterChip key={skin} active={appearance.skin === skin} onClick={() => choose({ skin })}>
               {skin.toUpperCase()}
             </FilterChip>
           ))}
@@ -190,7 +190,7 @@ export function SetupPage({ active, registerPrimary, setStatus, appearance, onCh
         <h3 id="setup-builtin" className="screen-label">
           BACKDROP · BUILT-IN
         </h3>
-        <div className="swatch-grid" role="radiogroup" aria-labelledby="setup-builtin">
+        <div className="swatch-grid" role="group" aria-labelledby="setup-builtin">
           <Swatch label="White" previewClass="swatch-white" selected={backdrop.kind === "white"} onSelect={() => choose({ backdrop: { kind: "white", id: null } })} />
           <Swatch label="Black" previewClass="swatch-black" selected={backdrop.kind === "black"} onSelect={() => choose({ backdrop: { kind: "black", id: null } })} />
           <Swatch label="Match system" previewClass="swatch-system" selected={backdrop.kind === "system"} onSelect={() => choose({ backdrop: { kind: "system", id: null } })} />
@@ -232,7 +232,7 @@ export function SetupPage({ active, registerPrimary, setStatus, appearance, onCh
         )}
 
         {uploads.length > 0 && (
-          <div className="swatch-grid" role="radiogroup" aria-label="Uploaded images">
+          <div className="swatch-grid" role="group" aria-label="Uploaded images">
             {uploads.map((img) => (
               <div key={img.id} className="swatch-wrap">
                 <Swatch label={img.name} preview={img.thumb_url} selected={selectedImage === img.id} onSelect={() => choose({ backdrop: { kind: "upload", id: img.id } })} />
@@ -263,9 +263,9 @@ export function SetupPage({ active, registerPrimary, setStatus, appearance, onCh
         <h3 id="setup-fit" className="screen-label">
           FIT · DARKEN · BLUR
         </h3>
-        <div className="chip-row" role="radiogroup" aria-labelledby="setup-fit">
+        <div className="chip-row" role="group" aria-labelledby="setup-fit">
           {(["fill", "fit", "center"] as Fit[]).map((fit) => (
-            <FilterChip key={fit} active={appearance.fit === fit} role="radio" aria-checked={appearance.fit === fit} aria-pressed={undefined} onClick={() => choose({ fit })}>
+            <FilterChip key={fit} active={appearance.fit === fit} onClick={() => choose({ fit })}>
               {fit.toUpperCase()}
             </FilterChip>
           ))}

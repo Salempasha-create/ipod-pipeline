@@ -312,26 +312,34 @@ Each scope item is tracked as a GitHub issue under its milestone.
 
 ---
 
-## 16. Appearance: backgrounds
+## 16. Appearance: skins and backdrops
 
-### 16.1 Built-in backgrounds
-- **White** (default) and **Black**, as plain colors.
+The look is defined in [`docs/DESIGN.md`](docs/DESIGN.md) (PL-1). This section covers what the user can change.
+
+### 16.1 Skins
+- The device body comes in two skins: **Ivory** (default) and **Graphite**, switched with the SKIN key.
+- The screen stays black with white text on every skin.
+
+### 16.2 Built-in backdrops
+- The backdrop is what sits behind the device: **White** (default) and **Black**, as plain colors.
 - **Match system:** White in light mode, Black in dark mode.
 
-### 16.2 Built-in collections
-- None at launch. Image collections are bundled only when their license allows redistribution (§16.6).
+### 16.3 Built-in collections
+- None. No third-party image collection is bundled unless its license allows redistribution (§16.7).
 
-### 16.3 User images
-- Users can upload their own images or add a whole folder.
-- Uploads are **copied** into the app's user-data folder (per OS, via `platformdirs`). They never leave the user's computer.
+### 16.4 User images
+- **Upload image:** a single image is **copied** into the app's user-data folder (per OS, via `platformdirs`).
+- **Add folder:** a folder is **linked in place**: only its path is stored and its files are never copied, moved or changed. It is scanned for images, and thumbnails are generated lazily and cached, so folders with thousands of images stay fast. Removing a linked folder never touches the original files.
+- User images never leave the user's computer.
 
-### 16.4 Background picker
-- Shows thumbnails of the built-in backgrounds, any built-in collections, and the user's uploads.
+### 16.5 Backdrop picker
+- Opened with the SETUP key. Thumbnails grouped as **Built-in** and **My images** (uploads and linked folders).
 
-### 16.5 Display and readability
+### 16.6 Display and readability
 - Fit options: **fill / fit / center**.
-- **Darken** slider (0–80%) and optional **blur**, so UI text stays legible on any image.
+- **Darken** slider (0–80%) and optional **blur**, so the device stays readable on any image.
+- Skin and backdrop choices persist across restarts.
 
-### 16.6 Third-party images
+### 16.7 Third-party images
 - Third-party images are bundled only when their license allows redistribution.
 - The license is stored in `docs/third-party/`, and the images are credited in `docs/third-party/CREDITS.md`.
