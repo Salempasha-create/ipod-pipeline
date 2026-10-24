@@ -3,11 +3,13 @@ interface Props {
   /** Lit-segment color: the source color (§5). */
   color: string;
   label: string;
+  /** Unlit-segment color: the skin's dim by default; pass a screen color on the black screen. */
+  off?: string;
   segments?: number;
 }
 
 /** 20-segment progress bar. */
-export function SegmentedProgress({ percent, color, label, segments = 20 }: Props) {
+export function SegmentedProgress({ percent, color, label, off = "var(--dim)", segments = 20 }: Props) {
   const clamped = Math.max(0, Math.min(100, percent));
   const lit = Math.round((clamped / 100) * segments);
   return (
@@ -20,7 +22,7 @@ export function SegmentedProgress({ percent, color, label, segments = 20 }: Prop
       aria-valuenow={Math.round(clamped)}
     >
       {Array.from({ length: segments }, (_, i) => (
-        <span key={i} style={{ background: i < lit ? color : "var(--dim)" }} />
+        <span key={i} style={{ background: i < lit ? color : off }} />
       ))}
     </div>
   );

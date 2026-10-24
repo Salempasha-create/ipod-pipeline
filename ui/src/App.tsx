@@ -1,26 +1,54 @@
-import { useEffect, useRef, useState } from "react";
-import { api, type DiscoveryError, type PluginInfo } from "./api";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { api, type DiscoveryError, type Job, type PluginInfo, type Skin } from "./api";
 import { Backdrop } from "./components/Backdrop";
+import { Changer } from "./components/Changer";
 import { ClickWheel, type Page } from "./components/ClickWheel";
 import { DeviceHeader, type SourceLed } from "./components/DeviceHeader";
 import { Key } from "./components/Key";
 import { PageTabs } from "./components/PageTabs";
-import { PluginCard } from "./components/PluginCard";
-import { KNOWN_SOURCES, sourceStyle } from "./sources";
+import { LibraryPage } from "./pages/LibraryPage";
+import { QueuePage } from "./pages/QueuePage";
+import { SearchPage } from "./pages/SearchPage";
+import { SourcesPage } from "./pages/SourcesPage";
+import { KNOWN_SOURCES, sourceStyle, type SourceStyle } from "./sources";
 
-const TABS: { id: Page; label: string }[] = [
-  { id: "search", label: "SEARCH" },
-  { id: "queue", label: "QUEUE" },
-  { id: "library", label: "LIBRARY" },
-  { id: "sources", label: "SOURCES" },
-];
+type View = Page | "setup";
+const VIEWS: View[] = ["search", "queue", "library", "sources", "setup"];
+
+/** Startup deep link, e.g. #queue or #search?q=artist (handy in development). */
+function readHash(): { view: View; query: string } {
+  const [name, params] = window.location.hash.slice(1).split("?");
+  const view = (VIEWS as string[]).includes(name) ? (name as View) : "search";
+  return { view, query: new URLSearchParams(params ?? "").get("q") ?? "" };
+}
+
+const initial = readHash();
+const JOBS_POLL_MS = 500;
 
 export function App() {
-  const [page, setPage] = useState<Page>("search");
-  const primaryAction = useRef<(() => void) | null>(null);
+  const [view, setView] = useState<View>(initial.view);
+  const [skin, setSkin] = useState<Skin>("ivory");
   const [plugins, setPlugins] = useState<PluginInfo[]>([]);
-  const [, setErrors] = useState<DiscoveryError[]>([]);
+  const [errors, setErrors] = useState<DiscoveryError[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [paused, setPaused] = useState(false);
+  const [status, setStatus] = useState("");
+  const [downloading, setDownloading] = useState(false);
+
+  // The page on the screen registers what the wheel's center button and the DOWNLOAD key do.
+  const primaryAction = useRef<(() => void) | null>(null);
+  const registerPrimary = useCallback((action: (() => void) | null) => {
+    primaryAction.current = action;
+  }, []);
+  const [download, setDownload] = useState<(() => Promise<void>) | null>(null);
+  const registerDownload = useCallback((action: (() => Promise<void>) | null) => {
+    setDownload(() => action);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.skin = skin;
+  }, [skin]);
 
   useEffect(() => {
     api
@@ -32,10 +60,38 @@ export function App() {
       .catch((err: Error) => setLoadError(err.message));
   }, []);
 
+  const loadJobs = useCallback(async () => {
+    try {
+      const data = await api.jobs();
+      setJobs(data.jobs);
+      setPaused(data.paused);
+    } catch {
+      // The backend being briefly unreachable is shown by other calls.
+    }
+  }, []);
+
+  useEffect(() => {
+    loadJobs();
+    const timer = window.setInterval(loadJobs, JOBS_POLL_MS);
+    return () => window.clearInterval(timer);
+  }, [loadJobs]);
+
   const replace = (updated: PluginInfo) =>
     setPlugins((list) => list.map((p) => (p.kind === updated.kind && p.id === updated.id ? updated : p)));
 
+  const navigate = useCallback((next: View) => {
+    primaryAction.current = null;
+    setView(next);
+  }, []);
+
   const sources = plugins.filter((p) => p.kind === "source");
+  const styles = useMemo(() => new Map(sources.map((p) => [p.id, sourceStyle(p)])), [sources]);
+  const sourceFor = useCallback(
+    (id: string): SourceStyle =>
+      styles.get(id) ?? sourceStyle({ id, name: id, icon: null, code: null, color: null }),
+    [styles],
+  );
+
   const leds: SourceLed[] = [
     ...KNOWN_SOURCES.map((s) => ({
       code: s.code,
@@ -45,11 +101,37 @@ export function App() {
     })),
     ...sources
       .filter((p) => !KNOWN_SOURCES.some((s) => s.id === p.id))
-      .map((p) => {
-        const style = sourceStyle(p);
-        return { code: style.code, name: p.name, color: style.color, on: p.enabled };
-      }),
+      .map((p) => ({ code: sourceFor(p.id).code, name: p.name, color: sourceFor(p.id).color, on: p.enabled })),
   ];
+
+  const albums = jobs.filter((j) => j.status === "done" && j.request.result).length;
+  const active = jobs.filter((j) => j.status === "running" || j.status === "queued").length;
+  const searchable = sources.filter((p) => p.enabled && p.can_search).length;
+
+  const tabs = [
+    { id: "search" as const, label: "SEARCH" },
+    { id: "queue" as const, label: active > 0 ? `QUEUE ${active}` : "QUEUE" },
+    { id: "library" as const, label: "LIBRARY" },
+    { id: "sources" as const, label: "SOURCES" },
+  ];
+  const page = view === "setup" ? null : view;
+
+  const pressDownload = async () => {
+    if (!download) return;
+    setDownloading(true);
+    try {
+      await download();
+      await loadJobs();
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const pageProps = (p: View) => ({
+    active: view === p,
+    registerPrimary,
+    setStatus,
+  });
 
   return (
     <>
@@ -57,49 +139,88 @@ export function App() {
       <div className="stage">
         <div className="device">
           <span className="grain" aria-hidden="true" />
-          <DeviceHeader leds={leds} albums={0} />
+          <DeviceHeader leds={leds} albums={albums} />
           <div className="main-row">
             <section className="screen-bezel" aria-label="Screen">
               <div className="screen">
                 <div className="screen-top">
-                  <PageTabs tabs={TABS} active={page} onSelect={setPage} />
+                  <PageTabs tabs={tabs} active={page} onSelect={navigate} />
+                  <span className="screen-status" aria-live="polite">
+                    {view === "setup" ? "SETUP" : status}
+                  </span>
                 </div>
-                {loadError && <p>Could not reach the backend: {loadError}</p>}
-                {page === "sources" && plugins.map((p) => (
-                  <PluginCard key={`${p.kind}-${p.id}`} plugin={p} onChange={replace} />
-                ))}
+                {loadError && <p className="screen-error">Could not reach the backend: {loadError}</p>}
+                <SearchPage
+                  {...pageProps("search")}
+                  searchableSources={searchable}
+                  sourceFor={sourceFor}
+                  initialQuery={initial.query}
+                  registerDownload={registerDownload}
+                  onGoToSources={() => navigate("sources")}
+                />
+                <QueuePage
+                  {...pageProps("queue")}
+                  jobs={jobs}
+                  paused={paused}
+                  sourceFor={sourceFor}
+                  onChanged={loadJobs}
+                />
+                <LibraryPage
+                  {...pageProps("library")}
+                  sourceFor={sourceFor}
+                  refreshKey={albums}
+                  onGoToSearch={() => navigate("search")}
+                />
+                <SourcesPage
+                  {...pageProps("sources")}
+                  plugins={plugins}
+                  errors={errors}
+                  sourceFor={sourceFor}
+                  onChange={replace}
+                />
+                {view === "setup" && (
+                  <div className="page">
+                    <p className="screen-hint">Backdrop settings are coming next.</p>
+                  </div>
+                )}
               </div>
             </section>
             <aside className="controls" aria-label="Controls">
               <ClickWheel
                 active={page}
-                onNavigate={setPage}
+                onNavigate={navigate}
                 onSelect={() => primaryAction.current?.()}
-                selectHint="Runs the current page's main action."
+                selectHint="Runs the main action of the page on the screen."
               />
-              <Key variant="primary" icon="download" className="key-primary">
+              <Key
+                variant="primary"
+                icon="download"
+                onClick={pressDownload}
+                disabled={!download || downloading}
+                aria-describedby="download-hint"
+              >
                 DOWNLOAD
               </Key>
+              <span id="download-hint" className="visually-hidden">
+                {download ? "Loads the selected search result into the changer." : "Pick a search result first."}
+              </span>
               <div className="key-pair">
-                <Key icon="skin" iconBack="var(--action)">
+                <Key
+                  icon="skin"
+                  iconBack="var(--action)"
+                  aria-label={`Skin: ${skin === "ivory" ? "Ivory" : "Graphite"}. Switch to ${skin === "ivory" ? "Graphite" : "Ivory"}`}
+                  onClick={() => setSkin((s) => (s === "ivory" ? "graphite" : "ivory"))}
+                >
                   SKIN
                 </Key>
-                <Key icon="setup">SETUP</Key>
+                <Key icon="setup" aria-pressed={view === "setup"} onClick={() => navigate(view === "setup" ? "search" : "setup")}>
+                  SETUP
+                </Key>
               </div>
               <div className="grille" aria-hidden="true" />
             </aside>
           </div>
-          <section className="changer" aria-label="Changer">
-            <div className="changer-head">
-              <div className="changer-title">
-                <h2>CHANGER</h2>
-                <span className="changer-status">0 DISCS LOADED · DISC COLOR = SOURCE</span>
-              </div>
-              <Key icon="iopenpod" iconBack="var(--action)" iconSize={24}>
-                SEND TO iOPENPOD
-              </Key>
-            </div>
-          </section>
+          <Changer jobs={jobs} sourceFor={sourceFor} />
           <footer className="device-footer">
             <span>FIND · TAG · CONVERT · CARRY</span>
             <span>ALAC 16/44.1 · iPOD CLASSIC READY · SER. 0001</span>

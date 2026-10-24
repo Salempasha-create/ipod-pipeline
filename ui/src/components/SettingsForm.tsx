@@ -32,14 +32,15 @@ function parse(field: SettingField, raw: string | boolean): Value {
   return field.type === "choice" ? text : String(raw);
 }
 
+/** Settings form generated from a plugin's settings schema (issue #1), styled for the screen. */
 export function SettingsForm({ plugin, onSave }: Props) {
   const [draft, setDraft] = useState<Draft>(() => initialDraft(plugin));
   const [clearSecrets, setClearSecrets] = useState<Set<string>>(new Set());
-  const [status, setStatus] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
+  const [status, setStatus] = useState<{ ok: boolean; text: string } | null>(null);
   const [saving, setSaving] = useState(false);
 
   if (plugin.settings_schema.length === 0) {
-    return <p className="muted">This plugin has no settings.</p>;
+    return <p className="screen-hint">This plugin has no settings.</p>;
   }
 
   const set = (key: string, value: string | boolean) => {
@@ -62,7 +63,7 @@ export function SettingsForm({ plugin, onSave }: Props) {
         if (value !== plugin.values[field.key]) changes[field.key] = value;
       }
     } catch (err) {
-      setStatus({ kind: "error", text: (err as Error).message });
+      setStatus({ ok: false, text: (err as Error).message });
       return;
     }
     setSaving(true);
@@ -74,55 +75,76 @@ export function SettingsForm({ plugin, onSave }: Props) {
         return next;
       });
       setClearSecrets(new Set());
-      setStatus({ kind: "ok", text: "Saved" });
+      setStatus({ ok: true, text: "SAVED" });
     } catch (err) {
-      setStatus({ kind: "error", text: (err as Error).message });
+      setStatus({ ok: false, text: (err as Error).message });
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <form className="settings" onSubmit={submit}>
+    <form className="settings-form" onSubmit={submit}>
       {plugin.settings_schema.map((field) => {
         const id = `${plugin.kind}-${plugin.id}-${field.key}`;
+        const helpId = `${id}-help`;
         const value = draft[field.key];
         const isSet = plugin.secrets_set[field.key] && !clearSecrets.has(field.key);
+        const help = [
+          field.help,
+          field.secret && clearSecrets.has(field.key) ? "Will be removed when you save." : "",
+          field.secret ? "Kept in your computer's password store, never in a file." : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
         return (
-          <div className={`field field-${field.type}`} key={field.key}>
+          <div className="setting" key={field.key}>
             {field.type === "boolean" ? (
-              <label className="check" htmlFor={id}>
+              <label className="screen-check" htmlFor={id}>
                 <input
                   id={id}
                   type="checkbox"
                   checked={value === true}
+                  aria-describedby={help ? helpId : undefined}
                   onChange={(e) => set(field.key, e.target.checked)}
                 />
-                {field.label}
+                {field.label.toUpperCase()}
               </label>
             ) : (
               <>
-                <label htmlFor={id}>{field.label}</label>
+                <label className="screen-label" htmlFor={id}>
+                  {field.label.toUpperCase()}
+                </label>
                 {field.type === "choice" ? (
-                  <select id={id} value={String(value)} onChange={(e) => set(field.key, e.target.value)}>
+                  <select
+                    id={id}
+                    className="screen-input"
+                    value={String(value)}
+                    aria-describedby={help ? helpId : undefined}
+                    onChange={(e) => set(field.key, e.target.value)}
+                  >
                     {field.choices.map((c) => (
                       <option key={c}>{c}</option>
                     ))}
                   </select>
                 ) : (
-                  <div className="input-row">
+                  <div className="setting-row">
                     <input
                       id={id}
-                      type={field.secret ? "password" : field.type === "string" || field.type === "path" ? "text" : "number"}
+                      className="screen-input"
+                      type={
+                        field.secret ? "password" : field.type === "string" || field.type === "path" ? "text" : "number"
+                      }
                       inputMode={field.type === "integer" ? "numeric" : field.type === "number" ? "decimal" : undefined}
                       step={field.type === "number" ? "any" : undefined}
                       min={field.min ?? undefined}
                       max={field.max ?? undefined}
                       value={String(value)}
+                      aria-describedby={help ? helpId : undefined}
                       placeholder={
                         field.secret
                           ? isSet
-                            ? "Saved in the OS credential store; type to replace"
+                            ? "Saved. Type to replace"
                             : "Not set"
                           : field.default != null && field.default !== ""
                             ? `Default: ${field.default}`
@@ -134,32 +156,34 @@ export function SettingsForm({ plugin, onSave }: Props) {
                     {field.secret && isSet && (
                       <button
                         type="button"
-                        className="ghost"
+                        className="screen-button"
+                        aria-label={`Clear ${field.label}`}
                         onClick={() => {
                           setClearSecrets((s) => new Set(s).add(field.key));
                           set(field.key, "");
                         }}
                       >
-                        Clear
+                        CLEAR
                       </button>
                     )}
                   </div>
                 )}
               </>
             )}
-            {field.help && <p className="help">{field.help}</p>}
-            {field.secret && clearSecrets.has(field.key) && (
-              <p className="help">Will be removed when you save.</p>
+            {help && (
+              <p className="screen-hint" id={helpId}>
+                {help}
+              </p>
             )}
           </div>
         );
       })}
-      <div className="form-actions">
-        <button type="submit" disabled={saving}>
-          {saving ? "Saving…" : "Save settings"}
+      <div className="setting-row">
+        <button type="submit" className="screen-button" disabled={saving}>
+          {saving ? "SAVING…" : "SAVE SETTINGS"}
         </button>
         {status && (
-          <span className={status.kind === "ok" ? "ok" : "error"} role="status">
+          <span className={status.ok ? "screen-ok" : "screen-error"} role="status">
             {status.text}
           </span>
         )}

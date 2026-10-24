@@ -95,6 +95,19 @@ class JobManager:
         self._jobs: dict[str, Job] = {}
         self._tasks: dict[str, asyncio.Task[None]] = {}
         self._slots = asyncio.Semaphore(max_concurrent)
+        self._resumed = asyncio.Event()
+        self._resumed.set()
+
+    @property
+    def paused(self) -> bool:
+        return not self._resumed.is_set()
+
+    def set_paused(self, paused: bool) -> None:
+        """Pausing holds queued jobs before they start; running jobs finish normally."""
+        if paused:
+            self._resumed.clear()
+        else:
+            self._resumed.set()
 
     def start(self, source: Source, request: Mapping[str, Any] | None = None) -> Job:
         job = Job(id=uuid.uuid4().hex, source_id=source.id, request=dict(request or {}))
@@ -133,6 +146,7 @@ class JobManager:
 
     async def _run(self, job: Job, source: Source) -> None:
         try:
+            await self._resumed.wait()
             async with self._slots:
                 self._set(job, JobStatus.RUNNING)
                 work_dir = self.work_root / job.id

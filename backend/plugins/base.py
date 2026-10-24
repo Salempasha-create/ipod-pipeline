@@ -142,6 +142,7 @@ class SearchResult:
     tracks_expected: int | None = None
     speed: int = 0  # 0-5
     free_slot: bool = True
+    uploader: str | None = None  # e.g. "vinylcrate_88 · free slot"
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

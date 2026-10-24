@@ -83,6 +83,12 @@
   font-weight: 500;
 }
 
+/* The browser's own clear button isn't part of the design; Esc still clears the field. */
+.search-line input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 .search-line input::placeholder {
   color: var(--screen-soft);
 }
@@ -350,6 +356,10 @@
 }
 
 .minidisc-album {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
   font-family: var(--font-read);
   font-size: 10px;
   font-weight: 700;
@@ -359,6 +369,9 @@
 
 .minidisc-artist {
   margin-top: 2px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-family: var(--font-data);
   font-size: 8px;
   font-weight: 600;
@@ -435,7 +448,7 @@
 /* ---- Disc card (changer) ---- */
 
 .disc-card {
-  flex: 1 1 280px;
+  flex: 1 1 300px;
   min-width: 0;
   display: flex;
   align-items: center;
@@ -456,13 +469,15 @@
 
 .disc-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 4px 8px;
 }
 
 .disc-stage {
   display: inline-flex;
+  white-space: nowrap;
   align-items: center;
   gap: 6px;
   font-family: var(--font-data);
