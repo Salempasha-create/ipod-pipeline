@@ -1,0 +1,32 @@
+name: New source plugin
+description: Propose a new place to get music from
+labels: ["source"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Source name
+      placeholder: e.g. Bandcamp
+    validations:
+      required: true
+  - type: textarea
+    id: search
+    attributes:
+      label: How it searches
+      description: API, website, indexer protocol, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: download
+    attributes:
+      label: How it downloads
+      description: Built-in, external client, direct HTTP, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: needs
+    attributes:
+      label: What users need
+      description: Accounts, API keys, other software.
+    validations:
+      required: true
