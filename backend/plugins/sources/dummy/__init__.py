@@ -17,6 +17,10 @@ class DummySource(Source):
     id = "dummy"
     name = "Dummy source"
     description = "Pretends to download a few files so you can see job progress. For development."
+    icon = "music"
+    code = "DEMO"
+    # Development-only color, distinct from the four real source colors (DESIGN.md §4).
+    color = "#B58CFF"
     settings_schema = (
         SettingField(
             "duration",

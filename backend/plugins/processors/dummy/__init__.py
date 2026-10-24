@@ -11,6 +11,7 @@ class DummyProcessor(Processor):
     id = "dummy"
     name = "Dummy processor"
     description = "Passes files through unchanged. Placeholder until tagging and conversion land."
+    icon = "convert"
     settings_schema = (
         SettingField("suffix", FieldType.STRING, "Note to add to the file", default="processed"),
     )

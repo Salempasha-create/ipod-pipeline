@@ -1,0 +1,352 @@
+/* The device: backdrop, body, header, main row, changer, footer (DESIGN.md §5). */
+
+/* ---- Backdrop ---- */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--backdrop-white);
+}
+
+.backdrop[data-kind="black"] {
+  background: var(--backdrop-black);
+}
+
+@media (prefers-color-scheme: dark) {
+  .backdrop[data-kind="system"] {
+    background: var(--backdrop-black);
+  }
+}
+
+.backdrop-image {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.backdrop-image[data-fit="fill"] {
+  background-size: cover;
+}
+
+.backdrop-image[data-fit="fit"] {
+  background-size: contain;
+}
+
+.backdrop-image[data-fit="center"] {
+  background-size: auto;
+}
+
+.backdrop-image.blurred {
+  inset: -32px;
+  filter: blur(16px);
+}
+
+.backdrop-scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--backdrop-black);
+}
+
+/* ---- Device body ---- */
+
+.stage {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  padding: 48px 24px;
+}
+
+.device {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 26px;
+  border: 1px solid var(--seam);
+  border-radius: var(--radius-device);
+  background: var(--body);
+  color: var(--ink);
+  box-shadow: var(--shadow-device);
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: url("../assets/design/grain.png");
+  background-size: 256px 256px;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.device > :not(.grain) {
+  position: relative;
+}
+
+/* ---- Header ---- */
+
+.device-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  user-select: none;
+}
+
+/* Presses on printed labels fall through to the header, which is the drag region. */
+.device-header .wordmark,
+.device-header .led-row,
+.device-header .header-right,
+.device-header .lib-counter {
+  pointer-events: none;
+}
+
+.device-header .header-right > button {
+  pointer-events: auto;
+}
+
+.wordmark {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.wordmark-name {
+  font-family: var(--font-label);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 3px;
+}
+
+.wordmark-model {
+  font-family: var(--font-data);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--soft);
+}
+
+.led-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+}
+
+.led {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-data);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--soft);
+}
+
+.led-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--dim);
+  box-shadow: inset 0 0 0 1px var(--seam);
+}
+
+.led-dot.on {
+  background: var(--led);
+  box-shadow: 0 0 8px var(--led);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lib-counter {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: var(--screen);
+  box-shadow: var(--shadow-display);
+}
+
+.lib-counter-label {
+  font-family: var(--font-data);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--screen-soft);
+}
+
+.lib-counter-digits {
+  font-family: var(--font-label);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--action);
+}
+
+/* ---- Main row: screen + controls ---- */
+
+.main-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+}
+
+.screen-bezel {
+  flex: 999 1 640px;
+  min-width: 0;
+  padding: 10px;
+  border-radius: var(--radius-bezel);
+  background: var(--bezel);
+  box-shadow: var(--shadow-bezel);
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 560px;
+  padding: 18px 22px 20px;
+  border-radius: var(--radius-screen);
+  background: var(--screen);
+  color: var(--screen-text);
+  box-shadow: var(--screen-inset);
+}
+
+.controls {
+  flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.controls > .key-primary,
+.controls > .key-pair,
+.controls > .grille {
+  width: 100%;
+  max-width: 320px;
+}
+
+.key-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.key-pair .key {
+  min-height: 52px;
+}
+
+.grille {
+  height: 64px;
+  border-radius: var(--radius-key);
+  background-color: var(--recess);
+  background-image: radial-gradient(circle, var(--dots) 1.8px, transparent 2.2px);
+  background-size: 10px 10px;
+  background-position: 5px 5px;
+  box-shadow: var(--shadow-grille);
+}
+
+/* ---- Changer ---- */
+
+.changer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  border-radius: var(--radius-slot);
+  background: var(--slot);
+  box-shadow: var(--shadow-slot);
+}
+
+.changer-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.changer-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.changer-title h2 {
+  font-family: var(--font-label);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.changer-status {
+  font-family: var(--font-data);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--soft);
+}
+
+.changer-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.drop-key {
+  flex: 0 1 200px;
+  min-height: 148px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 2px dashed var(--seam);
+  border-radius: var(--radius-card);
+  background: transparent;
+  color: var(--soft);
+  font-family: var(--font-data);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.drop-key-hint {
+  font-family: var(--font-read);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.changer-notice {
+  font-size: 14px;
+  color: var(--soft);
+}
+
+/* ---- Footer ---- */
+
+.device-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: var(--font-data);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--soft);
+}

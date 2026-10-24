@@ -4,6 +4,8 @@ import { App } from "./App";
 import "./styles/fonts.css";
 import "./styles/tokens.css";
 import "./styles.css";
+import "./styles/base.css";
+import "./styles/device.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

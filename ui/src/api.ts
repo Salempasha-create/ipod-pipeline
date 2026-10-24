@@ -19,6 +19,9 @@ export interface PluginInfo {
   id: string;
   name: string;
   description: string;
+  icon: string | null;
+  code?: string | null;
+  color?: string | null;
   settings_schema: SettingField[];
   enabled: boolean;
   values: Record<string, Value>;
