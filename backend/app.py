@@ -133,18 +133,20 @@ def create_app(
         return job.to_dict()
 
     @app.get("/api/jobs")
-    def list_jobs() -> dict[str, Any]:
+    async def list_jobs() -> dict[str, Any]:
         return {"jobs": [j.to_dict() for j in state["jobs"].all()]}
 
     @app.get("/api/jobs/{job_id}")
-    def get_job(job_id: str) -> dict[str, Any]:
+    async def get_job(job_id: str) -> dict[str, Any]:
         job = state["jobs"].get(job_id)
         if job is None:
             raise HTTPException(404, "unknown job")
         return job.to_dict()
 
+    # Job endpoints are async so they run on the event loop that owns the job tasks;
+    # asyncio.Task.cancel() is not thread-safe.
     @app.post("/api/jobs/{job_id}/cancel")
-    def cancel_job(job_id: str) -> dict[str, Any]:
+    async def cancel_job(job_id: str) -> dict[str, Any]:
         manager = state["jobs"]
         job = manager.get(job_id)
         if job is None:
